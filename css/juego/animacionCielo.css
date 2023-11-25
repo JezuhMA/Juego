@@ -1,14 +1,8 @@
 #cielo-1{
     width: 75vw;
-    height: 800vh;
+    height: 100vh;
     background: transparent;
     position: absolute;
-
-
-    -webkit-animation: animaCielo 15s linear infinite backwards running;
-    -moz-animation: animaCielo 15s linear infinite backwards running;
-    -ms-animation: animaCielo 15s linear infinite backwards running;
-    animation: animaCielo 15s linear infinite backwards running;
 
     .estrella{
         background: lightblue;
@@ -22,14 +16,8 @@
 #cielo-2{
     background: #000000;
     width: 75vw;
-    height: 800vh;
+    height: 100vh;
     position: absolute;
-    
-        -webkit-animation: animaCielo 9s linear infinite backwards running;
-        -moz-animation: animaCielo 9s linear infinite backwards running;
-        -ms-animation: animaCielo 9s linear infinite backwards running;
-        animation: animaCielo 9s linear infinite backwards running;
-
 
     .estrellaDos{
         background: darkcyan;
@@ -39,43 +27,3 @@
         border-radius: 50px;
     }
 }
-
-    @-webkit-keyframes animaCielo{
-        0% {
-           top:-100%;
-        }
-        
-        100% {
-            top:0%;
-        }
-    }
-
-    @-ms-keyframes animaCielo{
-        0% {
-           top:-100%;
-        }
-        
-        100% {
-            top:0%;
-        }
-    }
-
-
-    @-o-keyframes animaCielo{
-        0% {
-           top:-100%;
-        }
-        
-        100% {
-            top:0%;
-        }
-    }
-    @-moz-keyframes animaCielo{
-        0% {
-           top:-100%;
-        }
-        
-        100% {
-            top:0%;
-        }
-    }

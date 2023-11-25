@@ -31,3 +31,11 @@ html {
     position: fixed;
     overflow: hidden;
 }
+#nave{
+    width: 30px;
+    height: 30px;
+    background: red;
+    position: relative;
+    top: 820px;
+    left: 550px;
+}
