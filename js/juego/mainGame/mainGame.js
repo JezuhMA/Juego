@@ -77,7 +77,7 @@ const moverEstrellas = (cielo) => {
             top = Math.random() * - 200;
             estrella.style.left = `${Math.random() * cielo.clientWidth} px`
         }
-        estrella.style.top = `${top + 1 }px`;
+        estrella.style.top = `${top + 2}px`;
     });
 }
 
