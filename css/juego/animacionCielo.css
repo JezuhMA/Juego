@@ -1,29 +1,26 @@
 #cielo-1{
     width: 75vw;
     height: 100vh;
-    background: transparent;
     position: absolute;
-
-    .estrella{
-        background: lightblue;
-        position: absolute;
-        width: 4px;
-        height: 4px;
-        border-radius: 50px;
-    }
+}
+.estrella{
+    background: lightblue;
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50px;
 }
 
 #cielo-2{
-    background: #000000;
     width: 75vw;
     height: 100vh;
     position: absolute;
+}
 
-    .estrellaDos{
-        background: darkcyan;
-        position: absolute;
-        width: 4px;
-        height: 4px;
-        border-radius: 50px;
-    }
+.estrellaDos{
+    background: darkcyan;
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50px;
 }
