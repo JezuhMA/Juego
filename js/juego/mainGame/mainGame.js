@@ -1,4 +1,4 @@
-const NUM_ESTRELLAS = 200;
+const NUM_ESTRELLAS = 100;
 const INTERVALO = 1000 / 60;
 
 const estrellas = [];
@@ -49,7 +49,10 @@ window.onload = () => {
     cielo1.appendChild(fragCielo1);
     cielo2.appendChild(fragCielo2);
 
-    intervalId = setInterval(() => moverEstrellas(cielo1), INTERVALO);
+    intervalId = setInterval(() => {
+        moverEstrellas(cielo1);
+        moverDisparo();
+    }, INTERVALO);
 }
 
 window.onresize = () => {
@@ -79,5 +82,16 @@ const moverEstrellas = (cielo) => {
         }
         estrella.style.top = `${top + 2}px`;
     });
+}
+
+const moverDisparo = () => {
+    const disparos = document.querySelectorAll('.disparo');
+    if (disparos[0] != null || disparos[0] != undefined){
+        disparos.forEach((disparo) =>{
+            let bottom = parseFloat(disparo.style.bottom);
+            if(isNaN(bottom)) bottom = 0;
+            disparo.style.bottom = `${bottom + 2}px`;
+        })
+    }
 }
 
