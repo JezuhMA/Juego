@@ -15,7 +15,15 @@ function moverNave(izqder){
     let posicion = parseFloat(nave.style.left);
     if (isNaN(posicion)) posicion = 0;
     const signo = izqder ? -1 : 1;
-    nave.style.left = `${posicion + (4*signo)}px`;
+    const movimiento = limitarNave(nave, posicion , signo);
+    nave.style.left = `${movimiento}px`;  
+}
+
+function limitarNave(nave, posicion , signo){
+    const pantalla = document.querySelector('.juego');
+    const tamPantalla = pantalla.clientWidth - nave.clientWidth;
+    const limite = (posicion + 4 * signo);
+    return limite <= 0 ? 0 : limite >= tamPantalla ? tamPantalla : limite;
 }
 
 function disparar(){

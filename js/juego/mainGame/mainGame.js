@@ -69,7 +69,10 @@ window.onresize = () => {
     cielo1.replaceChildren(fragCielo1);
     cielo2.replaceChildren(fragCielo2);
 
-    intervalId = setInterval(() => moverEstrellas(cielo1), INTERVALO);
+    intervalId = setInterval(() => {
+        moverEstrellas(cielo1);
+        moverDisparo();
+    }, INTERVALO);
 }
 
 const moverEstrellas = (cielo) => {
@@ -91,7 +94,14 @@ const moverDisparo = () => {
             let bottom = parseFloat(disparo.style.bottom);
             if(isNaN(bottom)) bottom = 0;
             disparo.style.bottom = `${bottom + 2}px`;
+            if(limiteSuperior(disparo)) disparo.remove();
         })
     }
 }
 
+const limiteSuperior = (disparo) => {
+    const juego = document.querySelector('.juego');
+    const limit = juego.clientHeight;
+    const fuera = limit < parseFloat(disparo.style.bottom) - 4;
+    return fuera;
+}
