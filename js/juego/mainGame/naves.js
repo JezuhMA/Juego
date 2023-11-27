@@ -24,7 +24,7 @@ function disparar(){
     const posicion = parseFloat(nave.style.left);
     disparo.classList.add('disparo');
     const centrar = (parseFloat(nave.clientWidth) / 2) - 1.5;
-    disparo.style.bottom = `${nave.clientHeight - 3}px`
+    disparo.style.bottom = `${nave.clientHeight - 5}px`
     disparo.style.left = `${centrar + posicion}px`;
     nave.appendChild(disparo);
 }
