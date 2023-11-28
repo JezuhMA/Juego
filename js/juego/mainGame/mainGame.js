@@ -1,8 +1,8 @@
-const NUM_ESTRELLAS = 100;
+const NUM_ESTRELLAS = 400;
 
-const estrellas = [];
 let intervalId;
 
+/*
 const crearEstrellas = (cielo1, fragCielo1, fragCielo2) => {
     let posX, posY, opacidad;
     for (let i = 0; i < NUM_ESTRELLAS; i++) {
@@ -22,11 +22,9 @@ const crearEstrellas = (cielo1, fragCielo1, fragCielo2) => {
             estrella.classList.add("estrellaDos");
             fragCielo2.appendChild(estrella);
         }
-
-        estrellas.push(estrella);
     }
 }
-
+*/
 const posicionNave = () => {
     const divJuego = document.querySelector('.juego');
     const nave = document.getElementById('nave');
@@ -36,25 +34,14 @@ const posicionNave = () => {
 }
 
 const iniciarAnimacion = () => {
-    const cielo1 = document.getElementById("cielo-1");
-    moverEstrellas(cielo1);
     moverDisparo();
     intervalId = requestAnimationFrame(iniciarAnimacion);
 }
 
 window.onload = () => {
     
-    const cielo1 = document.getElementById("cielo-1");
-    const cielo2 = document.getElementById("cielo-2");
-    const fragCielo1 = document.createDocumentFragment();
-    const fragCielo2 = document.createDocumentFragment();
     posicionNave();
-
-    crearEstrellas(cielo1, fragCielo1, fragCielo2);
-
-    cielo1.appendChild(fragCielo1);
-    cielo2.appendChild(fragCielo2);
-
+    
     intervalId = requestAnimationFrame(iniciarAnimacion);
 }
 
@@ -62,35 +49,12 @@ window.onresize = () => {
     
     cancelAnimationFrame(intervalId);
 
-    const cielo1 = document.getElementById("cielo-1");
-
     posicionNave();
 
-    estrellas.forEach((estrella) => {
-        estrella.style.left = `${Math.random() * cielo1.clientWidth}px`;
-        estrella.style.top = `${Math.random() * cielo1.clientHeight}px`;
-    });
+
 
     intervalId = requestAnimationFrame(iniciarAnimacion);
 }
-
-const moverEstrellas = (cielo) => {
-    const cieloHeight = cielo.clientHeight;
-    const cieloWidth = cielo.clientWidth;
-    estrellas.forEach((estrella) => {
-        let top = parseFloat(estrella.style.top);
-        if(isNaN(top)) top = Math.random() * - 200;
-        if(top > cieloHeight){
-            top = Math.random() * - 200;
-            const left = Math.random() * cieloWidth;
-            estrella.style.top = `${top}px`;
-            estrella.style.left = `${left}px`;
-        } else {
-            estrella.style.top = `${top + 2}px`;
-        }
-    });
-}
-
 
 const moverDisparo = () => {
     const disparos = document.querySelectorAll('.disparo');

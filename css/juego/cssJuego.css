@@ -4,13 +4,7 @@
     padding: 0;
     box-sizing: border-box;
 }
-body,
-html {
-    margin: 0px;
-    padding: 0px;
-    position: fixed;
-    background: black;
-}
+
 .juego{
     width: 75%;
     height: inherit;
@@ -42,6 +36,6 @@ html {
 .disparo{
     width: 3px;
     height: 6px;
-    background-color: white;
+    background-color: blue;
     position: fixed;
 }
