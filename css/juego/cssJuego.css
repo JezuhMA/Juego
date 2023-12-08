@@ -5,12 +5,16 @@
     box-sizing: border-box;
 }
 
-.juego{
+.juego,#enemigos{
     width: 75%;
     height: inherit;
     position: absolute;
     right: 25vw;
     background-color: transparent;
+}
+#enemigos{
+    width: 100%;
+    right: 0%;
 }
 .lateral{
     background: fixed blue;

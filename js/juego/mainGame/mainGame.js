@@ -1,6 +1,4 @@
 //Constante para definir el numero de enmigos
-const NUM_ENEMIGOS = 1;
-
 const enemigos = new Map();
 
 let limit;
@@ -12,28 +10,35 @@ let intervalId;
 //Movimiento y disparo de la nave
 document.addEventListener('keydown', function(event) {
     if (event.key === 'ArrowLeft') {
-        moverNave(true);
+        moverNave(true, true);
+    }
+    if (event.key === 'ArrowUp') {
+        moverNave(false, false);
+    }
+    if (event.key === 'ArrowDown') {
+        moverNave(true, false);
     }
     if(event.key === "ArrowRight"){
-        moverNave(false);
+        moverNave(false, true);
     }
     if(event.key === " "){
         disparar();
     }
 });
 
-function moverNave(izqder){
+function moverNave(movX , movY){
     const nave = document.getElementById('nave');
-    let posicion = parseFloat(nave.style.left);
+    let posicion = movY ? parseFloat(nave.style.left) : parseFloat(nave.style.bottom);
     if (isNaN(posicion)) posicion = 0;
-    const signo = izqder ? -1 : 1;
-    const movimiento = limitarNave(nave, posicion , signo);
-    nave.style.left = `${movimiento}px`;  
+    const signo = movX ? -1 : 1;
+    const movimiento = limitarNave(nave, posicion , signo, movY);
+    const direccion = movY ? 'left' : 'bottom';
+    nave.style[direccion] = `${movimiento}px`;
 }
 
-function limitarNave(nave, posicion , signo){
+function limitarNave(nave, posicion , signo, movY){
     const pantalla = document.querySelector('.juego');
-    const tamPantalla = pantalla.clientWidth - nave.clientWidth;
+    const tamPantalla = movY ? pantalla.clientWidth - nave.clientWidth : pantalla.clientHeight - nave.clientHeight;
     const limite = (posicion + 4 * signo);
     return limite <= 0 ? 0 : limite >= tamPantalla ? tamPantalla : limite;
 }
@@ -60,7 +65,6 @@ const posicionNave = () => {
 const iniciarAnimacion = () => {
     moverDisparo();
     crearEnemigos();
-    moverEnemigos();
     intervalId = requestAnimationFrame(iniciarAnimacion);
 }
 
@@ -103,7 +107,7 @@ const limiteSuperior = (disparo) => {
 
 //Enemigos
 function agregarEnemigo(enemigo) {
-    let clave = `${enemigo.style.left},${enemigo.style.top}`;
+    let clave = 1;
     if (!enemigos.has(clave)) {
         enemigos.set(clave, enemigo);
         return true;
@@ -112,37 +116,15 @@ function agregarEnemigo(enemigo) {
 }
 
 function crearEnemigos(){
-    const frag = document.createDocumentFragment();
-    const div = document.querySelector("#enemigos");
-    for (let i = 0; i < NUM_ENEMIGOS; i++) {
-        const enemigo = document.createElement("div");
+    const enemigo = document.createElement("div");
+    if (agregarEnemigo(enemigo)) {
+        const frag = document.createDocumentFragment();
+        const div = document.querySelector("#enemigos");
         enemigo.classList.add("enemigo");
-        enemigo.style.top = `${Math.random()*-100}px`;
+        enemigo.style.top = `${Math.random()*div.clientHeight}px`;
         enemigo.style.left = `${Math.random()*div.clientWidth}px`;
-
-        if (agregarEnemigo(enemigo)) {
-            frag.appendChild(enemigo);
-        }
-    }
-    div.appendChild(frag);
-}
-
-
-
-
-function moverEnemigos() {
-    let enemigos = Array.from(document.getElementsByClassName('enemigo'));
-    if (enemigos[0] != null || enemigos[0] != undefined){
-        enemigos.forEach((enemigo) =>{
-            let top = parseFloat(enemigo.style.top);
-            if(isNaN(top)) top = 0;
-            let newTop = top + 2;
-            if(limiteInferior(newTop)) {
-                enemigo.remove();
-            } else {
-                enemigo.style.top = `${newTop}px`;
-            }
-        })
+        frag.appendChild(enemigo);
+        div.appendChild(frag);
     }
 }
 
