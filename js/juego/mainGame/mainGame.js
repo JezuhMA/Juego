@@ -4,11 +4,9 @@ const enemigos = new Map();
 
 const serpi = new Snake();
 
-let limit;
-
 let intervalId;
 
-//Movimiento y disparo de la nave
+//Movimiento de la serpiente
 document.addEventListener('keydown', function(event) {
     if (event.key === 'ArrowLeft') {
         serpi.moverSnake(true, true);
@@ -27,8 +25,33 @@ document.addEventListener('keydown', function(event) {
     }
 });
 
-function disparar(){
-    //TODO: transformar funcion
+function dibujarJuego(){
+    const tablero = document.getElementById("tablero");
+    const frag = document.createDocumentFragment();
+
+    //Limpiamos si hubiera algo
+    while (tablero.firstChild) {
+        tablero.firstChild.remove();
+    }
+
+    for (let x = 0; x < TAMANO_TABLERO; x++) {
+        for (let y = 0; y < TAMANO_TABLERO; y++) {
+            const pixel = document.createElement('div');
+            
+            pixel.classList.add('pixel');
+
+            pixel.style.left = `${20 * x}px`;
+            pixel.style.top = `${20 * y}px`;
+
+            if (serpi.cuerpo.some(segemento => segemento.x === x && segemento.y === y)) {
+                
+            } else {
+                
+            }
+        }
+        
+    }
+    
 }
 
 const posicionSnake = () => {
@@ -40,41 +63,15 @@ const posicionSnake = () => {
 const iniciarAnimacion = () => {
     moverDisparo();
     crearEnemigos();
+    
     intervalId = requestAnimationFrame(iniciarAnimacion);
 }
 
 window.onload = () => {
     
-    posicionSnake();
-    limit = serpi.pantalla.clientHeight;
+    dibujarJuego();
     
     intervalId = requestAnimationFrame(iniciarAnimacion);
-}
-
-window.onresize = () => {
-    
-    cancelAnimationFrame(intervalId);
-
-    posicionSnake();
-
-    intervalId = requestAnimationFrame(iniciarAnimacion);
-}
-
-const moverDisparo = () => {
-    const disparos = document.querySelectorAll('.disparo');
-    if (disparos[0] != null || disparos[0] != undefined){
-        disparos.forEach((disparo) =>{
-            let bottom = parseFloat(disparo.style.bottom);
-            if(isNaN(bottom)) bottom = 0;
-            disparo.style.bottom = `${bottom + 2}px`;
-            if(limiteSuperior(disparo)) disparo.remove();
-        })
-    }
-}
-
-const limiteSuperior = (disparo) => {
-    const fuera = limit < parseFloat(disparo.style.bottom) - 4;
-    return fuera;
 }
 
 //Enemigos

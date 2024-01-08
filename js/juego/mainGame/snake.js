@@ -1,7 +1,7 @@
-export default function Snake() {
+export default function Snake(TAMANO_TABLERO) {
     return  {
-        snake : document.getElementById('nave'),
-        pantalla : document.querySelector('.juego'),
+        posicion : {x: TAMANO_TABLERO / 2, y: TAMANO_TABLERO / 2},
+        cabeza : "imagenes/serpiente/",
         
         moverSnake : function moverSnake (movX , movY) {
             let posicion = movY ? parseFloat(this.snake.style.left) : parseFloat(this.snake.style.bottom);
