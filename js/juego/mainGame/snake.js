@@ -1,21 +1,26 @@
 export default function Snake(TAMANO_TABLERO) {
+    
+    let cabeza = { img: "imagenes/serpiente/", posicion : {x: TAMANO_TABLERO / 2, y: TAMANO_TABLERO / 2}};
+    let abdomen = { img: "imagenes/serpiente/", posicion : {x: TAMANO_TABLERO / 2, y: TAMANO_TABLERO / 2 - 1}};
+
     return  {
-        posicion : {x: TAMANO_TABLERO / 2, y: TAMANO_TABLERO / 2},
-        cabeza : "imagenes/serpiente/",
+        cabeza: cabeza,
+        abdomen: abdomen,
+        cuerpo : [cabeza,abdomen],
         
         moverSnake : function moverSnake (movX , movY) {
-            let posicion = movY ? parseFloat(this.snake.style.left) : parseFloat(this.snake.style.bottom);
-            if (isNaN(posicion)) posicion = 0;
-            const signo = movX ? -1 : 1;
-            const movimiento = this.limitarSnake(posicion , signo, movY);
-            const direccion = movY ? 'left' : 'bottom';
-            this.snake.style[direccion] = `${movimiento}px`;
+            this.cuerpo.forEach(segmento => {
+                segmento.posicion.x += movX;
+                segmento.posicion.y += movY;
+            });
         },
 
-        limitarSnake : function limitar (posicion , signo, movY) {
-            const tamPantalla = movY ? this.pantalla.clientWidth - this.snake.clientWidth : this.pantalla.clientHeight - this.snake.clientHeight;
-            const limite = (posicion + 4 * signo);
-            return limite <= 0 ? 0 : limite >= tamPantalla ? tamPantalla : limite;
+        //limitarSnake devolverá true si alguna parte de la serpiente está fuera del tablero, y false si toda la serpiente está dentro del tablero.
+        limitarSnake : function limitar () {
+            return this.cuerpo.some(segmento => {
+                return (segmento.posicion.x < 0 ||  segmento.posicion.x > TAMANO_TABLERO ||
+                        segmento.posicion.y < 0 || segmento.posicion.y > TAMANO_TABLERO);
+            });
         }
 
     }

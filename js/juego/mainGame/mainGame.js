@@ -1,28 +1,28 @@
 import Snake from './snake.js';
 //Constante para definir el numero de enmigos
 const enemigos = new Map();
+const TAMANO_TABLERO = 20;
 
-const serpi = new Snake();
+const serpi = new Snake(TAMANO_TABLERO);
 
 let intervalId;
 
 //Movimiento de la serpiente
 document.addEventListener('keydown', function(event) {
     if (event.key === 'ArrowLeft') {
-        serpi.moverSnake(true, true);
+        serpi.moverSnake(-20, 0);
     }
     if (event.key === 'ArrowUp') {
-        serpi.moverSnake(false, false);
+        serpi.moverSnake(0, 20);
     }
     if (event.key === 'ArrowDown') {
-        serpi.moverSnake(true, false);
+        serpi.moverSnake(0, -20);
     }
     if(event.key === "ArrowRight"){
-        serpi.moverSnake(false, true);
+        serpi.moverSnake(20, 0);
     }
-    if(event.key === " "){
-        disparar();
-    }
+    
+    dibujarJuego();
 });
 
 function dibujarJuego(){
@@ -43,27 +43,24 @@ function dibujarJuego(){
             pixel.style.left = `${20 * x}px`;
             pixel.style.top = `${20 * y}px`;
 
-            if (serpi.cuerpo.some(segemento => segemento.x === x && segemento.y === y)) {
-                
-            } else {
-                
+            if (serpi.cuerpo.some(segemento => segemento.posicion.x === x && segemento.posicion.y === y)) {
+                //const img = document.createElement('img');
+                //img.src()
+                //pixel.appendChild();
+                pixel.style.background = 'green';
+            } else {//if(manzana.x === x && manzana.y === y){
+                //pixel.style.background = 'red';
             }
+            frag.appendChild(pixel);
         }
         
     }
+    tablero.appendChild(frag);
     
 }
 
-const posicionSnake = () => {
-    const anchura = (serpi.pantalla.clientWidth / 2) - serpi.snake.clientWidth / 2;
-
-    serpi.snake.style.left = `${anchura}px`;
-}
 //Animacion de la pantalla
 const iniciarAnimacion = () => {
-    moverDisparo();
-    crearEnemigos();
-    
     intervalId = requestAnimationFrame(iniciarAnimacion);
 }
 
@@ -72,27 +69,4 @@ window.onload = () => {
     dibujarJuego();
     
     intervalId = requestAnimationFrame(iniciarAnimacion);
-}
-
-//Enemigos
-function agregarEnemigo(enemigo) {
-    let clave = 1;
-    if (!enemigos.has(clave)) {
-        enemigos.set(clave, enemigo);
-        return true;
-    }
-    return false;
-}
-
-function crearEnemigos(){
-    const enemigo = document.createElement("div");
-    if (agregarEnemigo(enemigo)) {
-        const frag = document.createDocumentFragment();
-        const div = serpi.pantalla;
-        enemigo.classList.add("enemigo");
-        enemigo.style.top = `${Math.random()*div.clientHeight}px`;
-        enemigo.style.left = `${Math.random()*div.clientWidth}px`;
-        frag.appendChild(enemigo);
-        div.appendChild(frag);
-    }
 }
