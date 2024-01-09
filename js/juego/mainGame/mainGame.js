@@ -1,6 +1,5 @@
 import Snake from './snake.js';
-//Constante para definir el numero de enmigos
-const enemigos = new Map();
+
 const TAMANO_TABLERO = 20;
 
 const serpi = new Snake(TAMANO_TABLERO);
@@ -10,19 +9,19 @@ let intervalId;
 //Movimiento de la serpiente
 document.addEventListener('keydown', function(event) {
     if (event.key === 'ArrowLeft') {
-        serpi.moverSnake(-20, 0);
+        serpi.moverSnake(-1, 0);
     }
     if (event.key === 'ArrowUp') {
-        serpi.moverSnake(0, 20);
+        serpi.moverSnake(0, -1);
     }
     if (event.key === 'ArrowDown') {
-        serpi.moverSnake(0, -20);
+        serpi.moverSnake(0, 1);
     }
     if(event.key === "ArrowRight"){
-        serpi.moverSnake(20, 0);
+        serpi.moverSnake(1, 0);
     }
-    
-    dibujarJuego();
+
+    if(!serpi.limitarSnake()) dibujarJuego();
 });
 
 function dibujarJuego(){
@@ -61,6 +60,7 @@ function dibujarJuego(){
 
 //Animacion de la pantalla
 const iniciarAnimacion = () => {
+    
     intervalId = requestAnimationFrame(iniciarAnimacion);
 }
 

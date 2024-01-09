@@ -7,7 +7,7 @@ export default function Snake(TAMANO_TABLERO) {
         cabeza: cabeza,
         abdomen: abdomen,
         cuerpo : [cabeza,abdomen],
-        
+        //TODO modificar esta funcion para Mejorar el movimiento
         moverSnake : function moverSnake (movX , movY) {
             this.cuerpo.forEach(segmento => {
                 segmento.posicion.x += movX;
