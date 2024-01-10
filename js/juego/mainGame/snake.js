@@ -8,17 +8,20 @@ export default function Snake(TAMANO_TABLERO) {
         abdomen: abdomen,
         cuerpo : [cabeza,abdomen],
         //TODO modificar esta funcion para Mejorar el movimiento
-        moverSnake : function moverSnake (movX , movY) {
-            const nuevaParte = this.cuerpo[this.cuerpo.length - 1];
-            //Movimiento del resto del cuerpo
-            for (let i = 1; i < this.cuerpo.length; i++) {
-                this.cuerpo[i].posicion.x = this.cuerpo[i - 1].posicion.x;
-                this.cuerpo[i].posicion.y = this.cuerpo[i - 1].posicion.y;
-                
+        moverSnake: function moverSnake(movX, movY) {
+            // Crear una copia del último segmento de la serpiente
+            let nuevoSegmento = Object.assign({}, this.cuerpo[this.cuerpo.length - 1]);
+        
+            // Mover cada segmento de la serpiente a la posición del segmento anterior
+            for (let i = this.cuerpo.length - 1; i > 0; i--) {
+                this.cuerpo[i].posicion = Object.assign({}, this.cuerpo[i - 1].posicion);
             }
-            //Movimiento de la cabeza
+        
+            // Mover la cabeza de la serpiente
             this.cuerpo[0].posicion.x += movX;
             this.cuerpo[0].posicion.y += movY;
+
+            return { nuevaPosicion: this.cuerpo[0].posicion, antiguaPosicion: nuevoSegmento.posicion };
         },
 
         //limitarSnake devolverá true si alguna parte de la serpiente está fuera del tablero, y false si toda la serpiente está dentro del tablero.
