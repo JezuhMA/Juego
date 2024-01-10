@@ -20,7 +20,7 @@ export default function Snake(TAMANO_TABLERO) {
             // Mover la cabeza de la serpiente
             this.cuerpo[0].posicion.x += movX;
             this.cuerpo[0].posicion.y += movY;
-
+            //TODO: comprobar que no se agrergue un nuevo segmento
             return { nuevaPosicion: this.cuerpo[0].posicion, antiguaPosicion: nuevoSegmento.posicion };
         },
 
