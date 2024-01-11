@@ -5,15 +5,13 @@ const TAMANO_TABLERO = 40;
 let ultimoTiempo = 0;
 const FPS = 5; // Los FPS que deseas
 const intervalo = 1000 / FPS; // Intervalo de tiempo en ms
-
 const movimiento = {};
-
 const serpi = new Snake(TAMANO_TABLERO);
 
 //Movimiento de la serpiente
 document.addEventListener("keydown", function (event) {
 	movimiento.x = 0;
-	movimiento.y = -1; //para que por defecto si no se toca ninguna flecha se mueva hacia arriba
+	movimiento.y = -1; // para que por defecto si no se toca ninguna flecha se mueva hacia arriba
 
 	if (event.key === "ArrowLeft") {
 		movimiento.x = -1;
@@ -31,9 +29,10 @@ document.addEventListener("keydown", function (event) {
 		movimiento.x = 1;
 		movimiento.y = 0;
 	}
+	//Iniciar la animacion en otro momento 
 	requestAnimationFrame(animar);
 });
-
+//TODO: esto tengo que cambiarlo porque cuando tenga pantallitas las pantallitas se ocuparan de esto
 function dibujarJuego() {
 	const tablero = document.getElementById("tablero");
 	const frag = document.createDocumentFragment();

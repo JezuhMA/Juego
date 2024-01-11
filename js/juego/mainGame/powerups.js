@@ -7,7 +7,7 @@ export default function PowerUps(id, posiciones) {
     function posicionar() {
         const posicionamiento = { x: null, y: null };
         for (const prop of posicionamiento) {
-            if (Object.hasOwnProperty.call(prop, posicionamiento)) {
+            if (Object.hasOwnProperty.call(posicionamiento, prop)) {
                 for (const coorde of posiciones) {
                     posicionamiento[prop] = coorde;
                 }
