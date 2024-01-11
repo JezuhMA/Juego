@@ -30,7 +30,7 @@ export default function Snake(TAMANO_TABLERO) {
         },
 
         //limitarSnake devolverá true si alguna parte de la serpiente está fuera del tablero, y false si toda la serpiente está dentro del tablero.
-        limitarSnake: function limitar(movX, movY) {
+        limitarSnake: function (movX, movY) {
             const segmento = this.cuerpo[0];
             return (segmento.posicion.x + movX < 0 || segmento.posicion.x + movX > TAMANO_TABLERO - 1 ||
                 segmento.posicion.y + movY < 0 || segmento.posicion.y + movY > TAMANO_TABLERO - 1);
