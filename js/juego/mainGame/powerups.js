@@ -1,16 +1,21 @@
+//posiciones tiene que ser array con dos coordenadas la primera X la segunda Y
 export default function PowerUps(id, posiciones) {
-    const posicionX = posiciones[0];
-    const posicionY = posiciones[1];
+
     const seguimiento = new Map();
     const idSeguimiento = 0;
 
-    function posicionar(){
-        for (const iterator of posiciones) {
-            if(Object.hasOwnProperty.call(iterator, posiciones)){
-                
+    function posicionar() {
+        const posicionamiento = { x: null, y: null };
+        for (const prop of posicionamiento) {
+            if (Object.hasOwnProperty.call(iterator, posicionamiento)) {
+                for (const coorde of posiciones) {
+                    posicionamiento[prop] = coorde;
+                }
             }
         }
+        return posicionamiento;
     }
+
     function establecerImagen(id) {
         switch (id) {
             case 'Apple':
@@ -89,7 +94,7 @@ export default function PowerUps(id, posiciones) {
         }
     }
 
-    function getSeguimiento(){
+    function getSeguimiento() {
         return seguimiento;
     }
 
@@ -98,6 +103,6 @@ export default function PowerUps(id, posiciones) {
         posicion: posicionar(),
         img: establecerImagen(id),
         addPowerUp: addPowerUP(id),
-        getMap : getSeguimiento(),
+        getMap: getSeguimiento(),
     };
 }
