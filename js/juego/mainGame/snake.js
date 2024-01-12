@@ -1,8 +1,19 @@
-export default function Snake(TAMANO_TABLERO) {
+export default function Snake(posiciones) {
 
-    let cabeza = { img: "imagenes/serpiente/", posicion: { x: TAMANO_TABLERO / 2, y: TAMANO_TABLERO / 2 } };
-    let abdomen = { img: "imagenes/serpiente/", posicion: { x: TAMANO_TABLERO / 2, y: TAMANO_TABLERO / 2 - 1 } };
-    
+    function posicionar(posX, posY) {
+        const posicionamiento = { x: null, y: null };
+        for (const key of Object.entries(posicionamiento)) {
+            for (const coorde of posiciones) {
+                posicionamiento[key] += coorde;
+            }
+        }
+        if (posX != undefined || posX != null) posicionamiento.x += posX;
+        if (posY != undefined || posY != null) posicionamiento.y += posY;
+        return posicionamiento;
+    }
+    let cabeza = { img: "imagenes/serpiente/", posicion: posicionar() };
+    let abdomen = { img: "imagenes/serpiente/", posicion: posicionar(null, -1) };
+
     //TODO: Hacer el cuerpo dinamico y cambiar la posicion de origen segun el tablero
     return {
         cabeza: cabeza,
@@ -23,7 +34,7 @@ export default function Snake(TAMANO_TABLERO) {
             return { nuevaPosicion: this.cuerpo[0].posicion, antiguaPosicion: nuevoSegmento.posicion };
         },
 
-        moverSegmentos : function () {
+        moverSegmentos: function () {
             for (let i = this.cuerpo.length - 1; i > 0; i--) {
                 this.cuerpo[i].posicion = Object.assign({}, this.cuerpo[i - 1].posicion);
             }
