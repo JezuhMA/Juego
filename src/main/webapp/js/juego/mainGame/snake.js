@@ -2,12 +2,12 @@ export default function Snake(posiciones) {
 
     function posicionar(posX, posY) {
         const posicionamiento = { x: posiciones[0], y: posiciones[1] };
-        if (posX != undefined || posX != null) posicionamiento.x += posX;
-        if (posY != undefined || posY != null) posicionamiento.y += posY;
+        if (posX !== undefined) posicionamiento.x += posX;
+        if (posY !== undefined) posicionamiento.y += posY;
         return posicionamiento;
     }
     let cabeza = { img: "imagenes/serpiente/", posicion: posicionar() };
-    let abdomen = { img: "imagenes/serpiente/", posicion: posicionar(null, -1) };
+    let abdomen = { img: "imagenes/serpiente/", posicion: posicionar(undefined, -1) };
 
     //TODO: Hacer el cuerpo dinamico y cambiar la posicion de origen segun el tablero
     return {
@@ -38,8 +38,8 @@ export default function Snake(posiciones) {
         //limitarSnake devolverá true si alguna parte de la serpiente está fuera del tablero, y false si toda la serpiente está dentro del tablero.
         limitarSnake: function (movX, movY) {
             const segmento = this.cuerpo[0];
-            return (segmento.posicion.x + movX < 0 || segmento.posicion.x + movX > 20 - 1 ||
-                segmento.posicion.y + movY < 0 || segmento.posicion.y + movY > 20 - 1);
+            return (segmento.posicion.x + movX < 0 || segmento.posicion.x + movX > posiciones[0]*2 - 1 ||
+                segmento.posicion.y + movY < 0 || segmento.posicion.y + movY > posiciones[0]*2 - 1);
         }
 
     }

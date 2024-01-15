@@ -1,35 +1,11 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Space Invaders</title>
-    <link rel="stylesheet" href="css/estilosDialogs.css"/>
-</head>
-<body>
-    <!--Cuadro de Dialogo para un formulario-->
-    <div class="modalDialog">
-        <dialog id="modal" class="modalDialog">
-            <legend>Iniciar Sesion</legend>
-            <!--No tiene cuenta-->
-            <p>¿Es tu primera vez? <span id="registro" class="enlace">Registrate</span></p>
-            
-            
-            <form method="dialog" id="inicioSesion" action=""> <!--Para hacer login-->    
-                <label for="email">Email*</label>
-                <input type="text" id="email" name="email" placeholder="Email"/>
-                <label for="passWd">Contraseña*</label>
-                <input type="password" id="passWd" name="passWd" placeholder="Contraseña"/>
-            </form>
-            <span id="passOlvidada" class="enlace">¿Olvidaste la contraseña?</span><br>
-
-            <button href="juego.html">Iniciar Sesion</button> <!--Aceptar-->    
-            
-        </dialog>
-    </div>
-    <div class="modalDialog">
-        <dialog id="regModule"></dialog>
-    </div>
-    <script src="js/index/modal.js" ></script>
-</body>
+    <head>
+        <title>Start Page</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta http-equiv="refresh" content="3; URL=ServletInicio" />
+    </head>
+    <body>
+        <p>Se redirigirá a "inicio" en 3 seconds o accediendo al enlace: <a href="ServletInicio">inicio</a></p>
+    </body>
 </html>

@@ -4,18 +4,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Space Invaders</title>
+  <title>Serpiente</title>
   <link rel="stylesheet" href="css/estilosDialogs.css"/>
 </head>
 <body>
 <!--Cuadro de Dialogo para un formulario-->
 <div class="modalDialog">
-  <dialog id="modal" class="modalDialog">
     <form method="GET" id="inicioSesion" action="ServletInicio"> <!--Para hacer login-->
       <fieldset>
         <legend>Iniciar Sesion</legend>
         <!--No tiene cuenta-->
-        <p>¿Es tu primera vez? <span id="registro" class="enlace">Registrate</span></p>
+        <p>¿Es tu primera vez? <a href="ServletInicio" id="registro" class="enlace">Registrate</a></p>
         <label for="email">Email*</label>
         <input type="text" id="email" name="email" placeholder="Email"/>
         <label for="passWd">Contraseña*</label>
@@ -27,12 +26,6 @@
         <button>Iniciar Sesion</button> <!--Aceptar-->
       </fieldset>
     </form>
-
-
-  </dialog>
-</div>
-<div class="modalDialog">
-  <dialog id="regModule"></dialog>
 </div>
 <script src="js/index/modal.js" ></script>
 </body>
