@@ -6,7 +6,7 @@ let ultimoTiempo = 0;
 const FPS = 5; // Los FPS que deseas
 const intervalo = 1000 / FPS; // Intervalo de tiempo en ms
 const movimiento = {};
-const serpi = new Snake([20,20]);
+const serpi = new Snake([TAMANO_TABLERO/2,TAMANO_TABLERO/2]);
 
 //Movimiento de la serpiente
 document.addEventListener("keydown", function (event) {
@@ -63,8 +63,7 @@ function dibujarJuego() {
 				//img.src()
 				//pixel.appendChild();
 				pixel.style.background = "green";
-			} else {
-				//if(manzana.x === x && manzana.y === y){
+			} else if(manzana.x === x && manzana.y === y){
 				//pixel.style.background = 'red';
 			}
 			frag.appendChild(pixel);

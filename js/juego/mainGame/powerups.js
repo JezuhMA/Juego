@@ -1,18 +1,13 @@
 //posiciones tiene que ser array con dos coordenadas la primera X la segunda Y
-export default function PowerUps(id, posiciones) {
+export default function PowerUps(id, posX, posY) {
 
     const seguimiento = new Map();
     let idSeguimiento = 0;
 
-    function posicionar() {
-        const posicionamiento = { x: null, y: null };
-        for (const prop of posicionamiento) {
-            if (Object.hasOwnProperty.call(posicionamiento, prop)) {
-                for (const coorde of posiciones) {
-                    posicionamiento[prop] = coorde;
-                }
-            }
-        }
+    function posicionar(posX, posY) {
+        const posicionamiento = { x: 0, y: 0 };
+        if (posX != undefined || posX != null) posicionamiento.x += posX;
+        if (posY != undefined || posY != null) posicionamiento.y += posY;
         return posicionamiento;
     }
 
@@ -53,11 +48,11 @@ export default function PowerUps(id, posiciones) {
         }
     }
 
-    function addPowerUP(id) {
+    function addPowerUP(id, posX, posY) {
 
         const powerUpObj = {
             id: id,
-            posicion: posicionar(),
+            posicion: posicionar(posX, posY),
             img: establecerImagen(id),
         };
 
@@ -80,9 +75,9 @@ export default function PowerUps(id, posiciones) {
 
     return {
         id: id,
-        posicion: posicionar(),
+        posicion: posicionar(posX, posY),
         img: establecerImagen(id),
-        addPowerUp: addPowerUP(id),
-        getMap: getSeguimiento(),
+        addPowerUp: addPowerUP,
+        getMap: getSeguimiento,
     };
 }

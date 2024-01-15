@@ -1,12 +1,7 @@
 export default function Snake(posiciones) {
 
     function posicionar(posX, posY) {
-        const posicionamiento = { x: null, y: null };
-        for (const key of Object.entries(posicionamiento)) {
-            for (const coorde of posiciones) {
-                posicionamiento[key] += coorde;
-            }
-        }
+        const posicionamiento = { x: posiciones[0], y: posiciones[1] };
         if (posX != undefined || posX != null) posicionamiento.x += posX;
         if (posY != undefined || posY != null) posicionamiento.y += posY;
         return posicionamiento;
@@ -25,7 +20,7 @@ export default function Snake(posiciones) {
             let nuevoSegmento = Object.assign({}, this.cuerpo[this.cuerpo.length - 1]);
 
             // Mover cada segmento de la serpiente a la posición del segmento anterior
-            moverSegmentos();
+            this.moverSegmentos();
 
             // Mover la cabeza de la serpiente
             this.cuerpo[0].posicion.x += movX;
@@ -43,8 +38,8 @@ export default function Snake(posiciones) {
         //limitarSnake devolverá true si alguna parte de la serpiente está fuera del tablero, y false si toda la serpiente está dentro del tablero.
         limitarSnake: function (movX, movY) {
             const segmento = this.cuerpo[0];
-            return (segmento.posicion.x + movX < 0 || segmento.posicion.x + movX > TAMANO_TABLERO - 1 ||
-                segmento.posicion.y + movY < 0 || segmento.posicion.y + movY > TAMANO_TABLERO - 1);
+            return (segmento.posicion.x + movX < 0 || segmento.posicion.x + movX > 20 - 1 ||
+                segmento.posicion.y + movY < 0 || segmento.posicion.y + movY > 20 - 1);
         }
 
     }
