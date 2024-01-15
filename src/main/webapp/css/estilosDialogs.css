@@ -1,0 +1,15 @@
+.enlace{
+    text-decoration: underline;
+    cursor: pointer;
+}
+.modalDialog{
+    text-align: center;
+}
+legend{
+    font-size: larger;
+}
+input , label{
+    display: flex;
+    margin-bottom: 0.3em;
+}
+
