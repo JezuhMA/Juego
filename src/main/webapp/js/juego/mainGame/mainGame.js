@@ -50,13 +50,13 @@ function dibujarJuego() {
 
 			pixel.style.left = `${20 * x}px`;
 			pixel.style.top = `${20 * y}px`;
-			pixel.dataset.x = x;
-			pixel.dataset.y = y;
+			pixel.dataset.x = `${x}`;
+			pixel.dataset.y = `${y}`;
 
 			if (
 				serpi.cuerpo.some(
-					(segemento) =>
-						segemento.posicion.x === x && segemento.posicion.y === y
+					(segmento) =>
+						segmento.posicion.x === x && segmento.posicion.y === y
 				)
 			) {
 				//const img = document.createElement('img');

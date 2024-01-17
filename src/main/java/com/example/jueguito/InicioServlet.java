@@ -4,15 +4,15 @@ import java.io.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 
-@WebServlet(name = "ServletInicio", urlPatterns = "/ServletInicio")
-public class HelloServlet extends HttpServlet {
+@WebServlet("/inicio")
+public class InicioServlet extends HttpServlet {
 
     public void processRequest(HttpServletRequest request, HttpServletResponse response) throws  IOException {
         if (request.getContentType() == null && request.getParameterMap().isEmpty()) {
             response.sendRedirect("inicioSesion.jsp");
             return;
         }
-        String status = request.getParameter("inicio");
+        String status = request.getParameter("status");
         if (status.equals("OK")) {
             if(comprobarCredenciales(request)){
                 redirigirJuego(request,response);
@@ -32,7 +32,8 @@ public class HelloServlet extends HttpServlet {
        //Ambas credenciales deben ser ciertas
         return passValida && emailValido;
     }
-//TODO: enlazar con DB
+
+    //TODO: enlazar con DB
     private boolean comprobarEmail(String email) {
         return true;
     }

@@ -6,8 +6,8 @@ export default function PowerUps(id, posX, posY) {
 
     function posicionar(posX, posY) {
         const posicionamiento = { x: 0, y: 0 };
-        if (posX != undefined || posX != null) posicionamiento.x += posX;
-        if (posY != undefined || posY != null) posicionamiento.y += posY;
+        if (posX !== undefined) posicionamiento.x += posX;
+        if (posY !== undefined) posicionamiento.y += posY;
         return posicionamiento;
     }
 
@@ -20,7 +20,7 @@ export default function PowerUps(id, posX, posY) {
                     img: 'imagenes/juego/powerups/apple',
                     alt: 'imagen no encontrada',
                 };
-            case 'PosinedApple':
+            case 'PoisonedApple':
 
                 return {
                     status: 'OK',
@@ -58,7 +58,7 @@ export default function PowerUps(id, posX, posY) {
 
         switch (id) {
             case 'Apple':
-            case 'PosinedApple':
+            case 'PoisonedApple':
             case 'Star':
             case 'Portal':
                 seguimiento.set(idSeguimiento, powerUpObj);
