@@ -78,7 +78,10 @@ public class UsuarioDAO implements DAO<Usuario, Integer> {
             LOGGER.log(Level.SEVERE, "Error al cerrar preparedStatement: ".concat(e.getLocalizedMessage()), e);
             throw e;
         }
-        try { conn.close(); } catch (SQLException ex) {
+        try {
+            conn.commit();
+            conn.close();
+        } catch (SQLException ex) {
             LOGGER.log(Level.SEVERE, "Error al cerrar conexion: ".concat(ex.getLocalizedMessage()), ex);
             throw ex;
         }
@@ -105,6 +108,7 @@ public class UsuarioDAO implements DAO<Usuario, Integer> {
 
         Connection conn = null;
         PreparedStatement ptm = null;
+        ResultSet rs = null;
         int idUsuario = 0;
 
         try {
@@ -121,7 +125,25 @@ public class UsuarioDAO implements DAO<Usuario, Integer> {
             ptm.setString(index++ , usuario.getLogin());
             ptm.setString(index++ , usuario.getPasswd());
             ptm.setString(index++ , usuario.getEmail());
+            ptm.executeUpdate();
 
+            rs = ptm.getGeneratedKeys();
+            if (rs.next()){
+                idUsuario = rs.getInt(1);
+            }
+            if (idUsuario == 0){
+                LOGGER.log(Level.SEVERE, "Error al insertar usuario");
+                throw new SQLException("Error al insertar usuario");
+            }
+
+        }   catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error al insertar usuario: ".concat(e.getLocalizedMessage()), e);
+            if(conn != null && !conn.isClosed()){
+                conn.rollback();
+            }
+            throw e;
+        } finally {
+            cerrarConexiones(conn , ptm , rs);
         }
         return null;
     }
