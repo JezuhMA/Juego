@@ -4,8 +4,9 @@
     <data-source source="LOCAL" name="juegoSerpiente@localhost" uuid="241c5afd-c465-42b0-9aa1-2133e4c85aae">
       <driver-ref>derby.remote</driver-ref>
       <synchronize>true</synchronize>
+      <configured-by-url>true</configured-by-url>
       <jdbc-driver>org.apache.derby.jdbc.ClientDriver</jdbc-driver>
-      <jdbc-url>jdbc:derby://localhost:1527/juegoSerpiente;create=true</jdbc-url>
+      <jdbc-url>jdbc:derby://localhost:1527/juegoSerpiente;create=true;territory=es_Es</jdbc-url>
       <jdbc-additional-properties>
         <property name="com.intellij.clouds.kubernetes.db.host.port" />
         <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />

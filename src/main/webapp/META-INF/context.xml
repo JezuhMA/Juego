@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ResourceLink name="jdbc/derbyjuegoSerpiente"
+<Context path="/Serpiente" >
+    <ResourceLink name="jdbc/derbyjuegoSerpiente"
               global="jdbc/derbyjuegoSerpiente"
               auth="Container"
               type="javax.sql.DataSource" />
+</Context>

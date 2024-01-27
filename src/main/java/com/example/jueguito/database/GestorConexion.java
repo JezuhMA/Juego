@@ -1,4 +1,4 @@
-package com.example.jueguito.databases;
+package com.example.jueguito.database;
 
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -34,6 +34,7 @@ public class GestorConexion {
         Connection connection;
         try{
             connection = dataSource.getConnection();
+            connection.setSchema("JUEGO_SERPIENTE");
             connection.setAutoCommit(true);
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "No se ha podido obtener conexion: ".concat(e.getMessage()));

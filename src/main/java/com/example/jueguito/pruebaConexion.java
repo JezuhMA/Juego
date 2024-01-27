@@ -1,6 +1,6 @@
 package com.example.jueguito;
 
-import com.example.jueguito.databases.GestorConexion;
+import com.example.jueguito.database.GestorConexion;
 import jakarta.inject.Inject;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -29,7 +29,7 @@ public class pruebaConexion extends HttpServlet {
 
             if (con != null){
                 Statement st = con.createStatement();
-                st.execute(("SELECT NOMBRE FROM JUEGO_SERPIENTE.USUARIO"));
+                st.execute(("SELECT NOMBRE FROM USUARIO"));
                 st.close();
 
                 resp.getWriter().println("Connexion: OK.");

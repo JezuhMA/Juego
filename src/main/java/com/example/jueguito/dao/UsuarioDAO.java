@@ -1,8 +1,9 @@
-package com.example.jueguito.DAO;
+package com.example.jueguito.dao;
 
-import com.example.jueguito.databases.GestorConexion;
+import com.example.jueguito.database.GestorConexion;
 import com.example.jueguito.entities.Usuario;
 import com.example.jueguito.interfaces.DAO;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 import java.sql.*;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@ApplicationScoped
 public class UsuarioDAO implements DAO<Usuario, Integer> {
 
     private static final Logger LOGGER = Logger.getLogger(UsuarioDAO.class.getName());
@@ -19,7 +21,7 @@ public class UsuarioDAO implements DAO<Usuario, Integer> {
 
     @Override
     public List<Usuario> getAll() throws SQLException {
-        String consulta = "SELECT * FROM JUEGO_SERPIENTE.USUARIO";
+        String consulta = "SELECT * FROM USUARIO";
         List<Usuario> usuarios = new ArrayList<>();
         Connection conn = null;
         PreparedStatement ptm = null;
@@ -46,7 +48,7 @@ public class UsuarioDAO implements DAO<Usuario, Integer> {
 
     @Override
     public Usuario getById(Integer id) throws SQLException {
-        String consulta = "SELECT * FROM JUEGO_SERPIENTE.USUARIO WHERE id = ?";
+        String consulta = "SELECT * FROM USUARIO WHERE id = ?";
         Usuario nuevo = null;
         Connection conn = null;
         PreparedStatement ptm = null;
@@ -100,7 +102,7 @@ public class UsuarioDAO implements DAO<Usuario, Integer> {
 
     @Override
     public Integer insert(Usuario usuario) throws SQLException {
-        String consulta = "INSERT INTO JUEGO_SERPIENTE.USUARIO(nombre, apellidos, sexo, fecha_nacimiento, dni, login, password, email) values (?, ?, ?, ?, ?, ?, ?, ?);";
+        String consulta = "INSERT INTO USUARIO(nombre, apellidos, sexo, fecha_nacimiento, dni, login, password, email) values (?, ?, ?, ?, ?, ?, ?, ?);";
         if (usuario.getId() != null){
             LOGGER.log(Level.SEVERE,"Error al insertar: este usuario ya existe" );
             throw new SQLException("Error al insertar: este usuario ya existe");
