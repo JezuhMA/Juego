@@ -1,6 +1,6 @@
-package com.example.jueguito.Listeners;
+package com.example.jueguito.listeners;
 
-import com.example.jueguito.databases.GestorConexion;
+import com.example.jueguito.database.GestorConexion;
 
 
 import jakarta.inject.Inject;

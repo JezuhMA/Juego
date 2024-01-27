@@ -1,11 +1,11 @@
-package com.example.jueguito;
+package com.example.jueguito.servlets;
 
 import java.io.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 
-@WebServlet("/inicio")
-public class InicioServlet extends HttpServlet {
+@WebServlet("/login")
+public class Login extends HttpServlet {
 
     public void processRequest(HttpServletRequest request, HttpServletResponse response) throws  IOException {
         if (request.getContentType() == null && request.getParameterMap().isEmpty()) {
@@ -59,6 +59,4 @@ public class InicioServlet extends HttpServlet {
         processRequest(req, resp);
     }
 
-    public void destroy() {
-    }
 }
