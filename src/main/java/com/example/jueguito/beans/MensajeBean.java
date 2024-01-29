@@ -39,14 +39,4 @@ public class MensajeBean implements Serializable {
         this.mensaje = mensaje;
         this.estilo = Estilo.AVISO.getEstilo();
     }
-    public String getMensaje() {
-        return mensaje;
-    }
-    public void setCustomMensaje(String mensaje, Estilo estilo) {
-        this.mensaje = mensaje;
-        this.estilo = estilo.getEstilo();
-    }
-    public String getEstilo() {
-        return estilo;
-    }
 }
