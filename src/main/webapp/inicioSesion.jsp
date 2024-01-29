@@ -14,7 +14,7 @@
       <fieldset>
         <legend>Iniciar Sesion</legend>
         <!--No tiene cuenta-->
-        <p>¿Es tu primera vez? <a href="usuario/altaUsuario" id="registro" class="enlace">Registrate</a></p>
+        <p>¿Es tu primera vez? <a href="usuario/registro" id="registro" class="enlace">Registrate</a></p>
         <label for="email">Email*</label>
         <input type="text" id="email" name="email" placeholder="Email"/>
         <label for="passWd">Contraseña*</label>
