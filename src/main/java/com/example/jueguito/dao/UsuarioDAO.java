@@ -72,17 +72,18 @@ public class UsuarioDAO implements DAO<Usuario, Integer> {
     }
 
     private void cerrarConexiones(Connection conn, PreparedStatement ptm, ResultSet rs) throws SQLException {
-        try { rs.close(); }catch (SQLException e){
+        try { if ( rs != null ) rs.close(); }catch (SQLException e){
             LOGGER.log(Level.SEVERE, "Error al cerrar ResultSet: ".concat(e.getLocalizedMessage()), e);
             throw e;
         }
-        try { ptm.close(); }catch (SQLException e){
+        try { if(ptm != null) ptm.close(); }catch (SQLException e){
             LOGGER.log(Level.SEVERE, "Error al cerrar preparedStatement: ".concat(e.getLocalizedMessage()), e);
             throw e;
         }
         try {
-            conn.commit();
-            conn.close();
+            if (conn != null) {
+                conn.close();
+            }
         } catch (SQLException ex) {
             LOGGER.log(Level.SEVERE, "Error al cerrar conexion: ".concat(ex.getLocalizedMessage()), ex);
             throw ex;
@@ -102,7 +103,7 @@ public class UsuarioDAO implements DAO<Usuario, Integer> {
 
     @Override
     public Integer insert(Usuario usuario) throws SQLException {
-        String consulta = "INSERT INTO USUARIO(nombre, apellidos, sexo, fecha_nacimiento, dni, login, password, email) values (?, ?, ?, ?, ?, ?, ?, ?);";
+        String consulta = "INSERT INTO USUARIO(nombre, apellidos, fecha_nacimiento, login, password, email) values (?, ?, ?, ?, ?, ?)";
         if (usuario.getId() != null){
             LOGGER.log(Level.SEVERE,"Error al insertar: este usuario ya existe" );
             throw new SQLException("Error al insertar: este usuario ya existe");
@@ -123,10 +124,11 @@ public class UsuarioDAO implements DAO<Usuario, Integer> {
             if (usuario.getFechaNacimiento() != null){
                 ptm.setDate(index++ ,  new Date(usuario.getFechaNacimiento().getTime()));
             }else{
-                ptm.setNull(index++ , java.sql.Types.DATE);}
+                ptm.setNull(index++ , java.sql.Types.DATE);
+            }
             ptm.setString(index++ , usuario.getLogin());
             ptm.setString(index++ , usuario.getPasswd());
-            ptm.setString(index++ , usuario.getEmail());
+            ptm.setString(index , usuario.getEmail());
             ptm.executeUpdate();
 
             rs = ptm.getGeneratedKeys();
@@ -137,7 +139,8 @@ public class UsuarioDAO implements DAO<Usuario, Integer> {
                 LOGGER.log(Level.SEVERE, "Error al insertar usuario");
                 throw new SQLException("Error al insertar usuario");
             }
-
+            conn.commit();
+            return idUsuario;
         }   catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error al insertar usuario: ".concat(e.getLocalizedMessage()), e);
             if(conn != null && !conn.isClosed()){
@@ -147,7 +150,6 @@ public class UsuarioDAO implements DAO<Usuario, Integer> {
         } finally {
             cerrarConexiones(conn , ptm , rs);
         }
-        return null;
     }
 
     @Override

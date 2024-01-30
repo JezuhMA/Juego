@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="es">
@@ -9,7 +10,13 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
 </head>
 <body>
-
+<div>
+    <c:if test="${mensajeBean != null}">
+        <c:if test="${mensajeBean.mensaje != null}">
+            <h1 class="${mensajeBean.estilo}">${mensajeBean.mensaje}</h1>
+        </c:if>
+    </c:if>
+</div>
 <!--Cuadro de Dialogo para un formulario-->
 <div class="modalDialog">
     <form method="POST" id="inicioSesion" action="login"> <!--Para hacer login-->

@@ -6,6 +6,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
@@ -25,21 +26,25 @@ public class UsuarioService {
         Map<String, String[]> parametros = request.getParameterMap();
         if (!parametros.isEmpty()){
             usuario = new Usuario();
-            Collection<String[]> parametro = parametros.values();
-            for (String[] values : parametro) {
-                String key = values[0];
-                String value = values[1];
+            String apellidos = "";
+            for (Map.Entry<String,String[]> values : parametros.entrySet()) {
+                String key = values.getKey();
+                String value = values.getValue()[0];
                 switch (key) {
                     case "nombre":
                         usuario.setNombre(value);
                         break;
-                    case "apellidos":
-                        usuario.setApellidos(value);
+                    case "apellido1":
+                        apellidos = apellidos.concat(value);
+                        break;
+                    case "apellido2":
+                        apellidos = apellidos.concat(" ").concat(value);
+                        usuario.setApellidos(apellidos);
                         break;
                     case "login":
                         usuario.setLogin(value);
                         break;
-                    case "passwd":
+                    case "password":
                         usuario.setPasswd(value);
                         break;
                     case "email":
@@ -58,6 +63,12 @@ public class UsuarioService {
                     default:
                         break;
                 }
+            }
+            try {
+                usuario.setId(usuarioDAO.insert(usuario));
+            } catch (SQLException sqlException){
+                Logger.getLogger(UsuarioService.class.getName())
+                        .log(Level.SEVERE, "Error al insertar usuario sin Id recuperada");
             }
         }
         return usuario;
