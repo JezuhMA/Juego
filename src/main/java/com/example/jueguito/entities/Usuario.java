@@ -80,4 +80,9 @@ public class Usuario implements Serializable {
     public void setFechaRegistro(Date fechaRegistro) {
         this.fechaRegistro = fechaRegistro;
     }
+
+    public boolean esValido() {
+        return (this.getId() != null && this.getId() > 0) &&
+                (this.getNombre() != null && !this.getNombre().isBlank());
+    }
 }

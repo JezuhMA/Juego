@@ -159,4 +159,29 @@ public class UsuarioDAO implements DAO<Usuario, Integer> {
     public int delete(Usuario usuario) throws SQLException {
         return 0;
     }
+
+    public Usuario getUserByLoginPass(String login, String passwd) {
+        String query = "SELECT * FROM USUARIO WHERE (login = ?, password = ?)";
+        Usuario usuario = null;
+        try (
+                Connection connection = gestorConexion.getConnection();
+                PreparedStatement pst = connection.prepareStatement(query);
+                ){
+            pst.setString(1, login);
+            pst.setString(2, passwd);
+            ResultSet rs = pst.executeQuery();
+            while (rs.next()){
+                usuario = new Usuario();
+                rellenarUser(usuario, rs);
+            }
+            try {
+                rs.close();
+            }catch (SQLException sqlException){
+                throw new SQLException("Error al cerrar ResultSet: ".concat(sqlException.getLocalizedMessage()), sqlException);
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error al recuperar usuario por login y contraseña: ".concat(e.getLocalizedMessage()), e);
+        }
+        return usuario;
+    }
 }
