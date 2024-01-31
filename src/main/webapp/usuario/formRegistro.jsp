@@ -31,10 +31,10 @@
                     <input type="email" name="email"/>
                 </label>
                 <label>Contraseña
-                    <input type="password" name="password">
+                    <input type="password" name="password" id="pass">
                 </label>
                 <label>Repite Contraseña
-                    <input type="password" name="repPassword">
+                    <input type="password" name="repPassword" id="repPass">
                 </label>
                 <label>Fecha Nacimiento
                     <input type="date" name="fechaNacimiento">
@@ -42,5 +42,6 @@
                 <button type="submit">Enviar</button>
             </fieldset>
         </form>
+        <script src="${pageContext.request.contextPath}/js/index/registro.js"></script>
     </body>
 </html>

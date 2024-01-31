@@ -24,9 +24,9 @@
         <legend>Iniciar Sesion</legend>
         <!--No tiene cuenta-->
         <p>¿Es tu primera vez? <a href="usuario/registro" id="registro" class="enlace">Registrate</a></p>
-        <label for="email">Email*</label>
-        <input type="text" id="email" name="login" placeholder="Email"/>
-        <label for="passWd">Contraseña*</label>
+        <label for="email">Login*</label>
+        <input type="text" id="email" name="login" placeholder="Nombre Usuario"/>
+        <label for="passWd">Contraseña*</label> <div id="mensajes"></div>
         <input type="password" id="passWd" name="passWd" placeholder="Contraseña"/>
         <span id="passOlvidada" class="enlace">¿Olvidaste la contraseña?</span><br>
         <label>
