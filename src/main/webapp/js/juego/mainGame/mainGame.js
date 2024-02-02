@@ -1,118 +1,36 @@
-import Snake from "./snake.js";
-
-const TAMANO_TABLERO = 40;
-
-let ultimoTiempo = 0;
-const FPS = 5; // Los FPS que deseas
-const intervalo = 1000 / FPS; // Intervalo de tiempo en ms
-const movimiento = {};
-const serpi = new Snake([TAMANO_TABLERO/2,TAMANO_TABLERO/2]);
-
-//Movimiento de la serpiente
-document.addEventListener("keydown", function (event) {
-	movimiento.x = 0;
-	movimiento.y = -1; // para que por defecto si no se toca ninguna flecha se mueva hacia arriba
-
-	if (event.key === "ArrowLeft") {
-		movimiento.x = -1;
-		movimiento.y = 0;
-	}
-	if (event.key === "ArrowUp") {
-		movimiento.x = 0;
-		movimiento.y = -1;
-	}
-	if (event.key === "ArrowDown") {
-		movimiento.x = 0;
-		movimiento.y = 1;
-	}
-	if (event.key === "ArrowRight") {
-		movimiento.x = 1;
-		movimiento.y = 0;
-	}
-	//Iniciar la animacion en otro momento 
-	requestAnimationFrame(animar);
-});
-//TODO: esto tengo que cambiarlo porque cuando tenga pantallitas las pantallitas se ocuparan de esto
-function dibujarJuego() {
-	const tablero = document.getElementById("tablero");
+window.onload = ()=> {
+	const pixel_tam = 10;
+	const TABLERO_TAM = 40;
+	const tablero = document.querySelector("#tablero");
 	const frag = document.createDocumentFragment();
+	const array_Juego = [];
 
-	//Limpiamos si hubiera algo
-	while (tablero.firstChild) {
-		tablero.firstChild.remove();
+	// AQUI RELLENO EL ARRAY_JUEGO PARA QUE TENGA EL TAMAÑO DEL TABLERO
+ 	for (let i = 0; i < TABLERO_TAM; i++) {
+		array_Juego[i] = [0];
+		for (let j = 0; j < TABLERO_TAM; j++) {
+			array_Juego[i][j] = 0;
+		}
 	}
-
-	for (let y = 0; y < TAMANO_TABLERO; y++) {
-		for (let x = 0; x < TAMANO_TABLERO; x++) {
+	 array_Juego[0][0] = 1;
+	// AQUI RECORRO EL ARRAY Y PINTO LOS PIXELES
+	for (let x = 0; x < TABLERO_TAM; x++) {
+		for (let y = 0; y < TABLERO_TAM; y++) {
 			const pixel = document.createElement("div");
-
-			pixel.classList.add("pixel");
-
-			pixel.style.left = `${20 * x}px`;
-			pixel.style.top = `${20 * y}px`;
-			pixel.dataset.x = `${x}`;
-			pixel.dataset.y = `${y}`;
-
-			if (
-				serpi.cuerpo.some(
-					(segmento) =>
-						segmento.posicion.x === x && segmento.posicion.y === y
-				)
-			) {
-				//const img = document.createElement('img');
-				//img.src()
-				//pixel.appendChild();
-				pixel.style.background = "green";
-			} else //if(manzana.x === x && manzana.y === y)
-			{
-				//pixel.style.background = 'red';
+			pixel.style.left = `${x * pixel_tam}px`;
+			pixel.style.top = `${y * pixel_tam}px`;
+			pixel.style.width = `${pixel_tam}px`;
+			pixel.style.height = `${pixel_tam}px`;
+			pixel.style.position = "absolute";
+			const estado = array_Juego[x][y];
+			console.log(estado);
+			if (estado === 0) {
+				pixel.style.backgroundColor = "black";
+			}else{
+				pixel.style.backgroundColor = "green";
 			}
 			frag.appendChild(pixel);
 		}
 	}
 	tablero.appendChild(frag);
 }
-
-function animacionSerpiente() {
-	if (!serpi.limitarSnake(movimiento.x, movimiento.y)) {
-		return serpi.moverSnake(movimiento.x, movimiento.y);
-	}
-	return null;
-}
-
-function actualizarPixeles(nuevaPosicion, antiguaPosicion) {
-	const pixelAntiguo = document.querySelector(
-		`.pixel[data-x="${antiguaPosicion.x}"][data-y="${antiguaPosicion.y}"]`
-	);
-	const pixelNuevo = document.querySelector(
-		`.pixel[data-x="${nuevaPosicion.x}"][data-y="${nuevaPosicion.y}"]`
-	);
-	pixelAntiguo.style.background = "black";
-	pixelNuevo.style.background = "green";
-}
-
-function animar(tiempoActual) {
-	requestAnimationFrame(animar);
-	const deltaTiempo = tiempoActual - ultimoTiempo;
-
-	if (deltaTiempo < intervalo) {
-		// Si no ha pasado el intervalo de tiempo, no hacemos nada
-		return;
-	}
-
-	// Guardamos el tiempo actual para el próximo cuadro
-	ultimoTiempo = tiempoActual;
-
-	let posiciones;
-	if ((posiciones = animacionSerpiente()) != null) {
-		const newPos = posiciones.nuevaPosicion;
-		const antPos = posiciones.antiguaPosicion;
-		actualizarPixeles(newPos, antPos);
-	} else {
-		//TODO: game over
-	}
-}
-
-window.onload = () => {
-	dibujarJuego();
-};
