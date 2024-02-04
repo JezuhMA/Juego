@@ -1,23 +1,41 @@
-window.onload = ()=> {
-	const PIXEL_TAM = 10;
+/**
+ * The `onload` method initializes the game and handles game logic.
+ *
+ * @returns {void}
+ */
+window.onload = () => {
+    const PIXEL_TAM = 10;
 	const TABLERO_TAM = 40;
-	const tablero = document.querySelector("#tablero");
-
+    const pixeles = [];
     // ESTADOS
     const FONDO = 0;
     const SERPIENTE = 1;
     const MANZANA = 2;
+    let ultimaDireccion = null;
+    const direccion = {
+        ArrowLeft: { x: -1, y: 0 },
+        ArrowRight: { x: 1, y: 0 },
+        ArrowUp: { x: 0, y: -1 },
+        ArrowDown: { x: 0, y: 1 },
+    };
+    const COLORES= {
+        0 : "fondo",
+        1 : "serpiente",
+        2 : "manzana",
+    }
+    let ultimoTiempo = 0;
+    const FPS = 15; // Los FPS que deseas
+    const intervalo = 1000 / FPS; // Intervalo de tiempo en ms
 
-    function newSegmento(estado ,positionX, positionY) {
+    function newSegmento(positionX, positionY) {
         return {
-            estado : estado,
             posX: positionX,
             posY: positionY,
         };
     }
 //Posiblemente necesite algo asi pa mantener la serpiente localizada
     const cuerpoSerpiente = [];
-    const manzana = newSegmento(MANZANA);
+    const manzana = newSegmento();
 	const frag = document.createDocumentFragment();
     const array_Juego = [];
     const POSX_INICIAL_SERPIENTE = 39;
@@ -27,80 +45,72 @@ window.onload = ()=> {
         for (let i = 0; i < TABLERO_TAM; i++) {
             array_Juego[i] = [0];
             for (let j = 0; j < TABLERO_TAM; j++) {
-                array_Juego[i][j] = 0;
+                array_Juego[i][j] = FONDO;
             }
         }
     }
-    function pintarPixeles(estado, pixel){
+    function darEstiloPixel(pixel, estado, x, y) {
+        pixel.dataset.x = `${x}`;
+        pixel.dataset.y = `${y}`;
+        pixel.style.left = `${x * PIXEL_TAM}px`;
+        pixel.style.top = `${y * PIXEL_TAM}px`;
+        pixel.classList.add("pixel");
         pixel.dataset.status = `${estado}`;
-        switch (estado) {
-            case FONDO :
-                pixel.style.backgroundColor = "black";
-                break;
-            case SERPIENTE :
-                pixel.style.backgroundColor = "green";
-                break;
-            case MANZANA :
-                pixel.style.backgroundColor = "red";
-                break;
-        }
+        pixel.classList.add(COLORES[estado]);
+    }
+    function pintarPixeles(estado, pixel){
+        if(pixel.dataset.status === estado) return;
+        const clase = pixel.dataset.status;
+        pixel.dataset.status = `${estado}`;
+        pixel.classList.remove(COLORES[clase]);
+        pixel.classList.add(COLORES[estado]);
     }
 
     //ESTA FUNCION INICIA EL JUEGO
     function inicio() {
         // AQUI RECORRO EL ARRAY Y PINTO LOS PIXELES
+        const tablero = document.querySelector("#tablero");
         initArrayJuego();
-        const segmento = newSegmento(1,39, 20);
+        const segmento = newSegmento(POSX_INICIAL_SERPIENTE, POSY_INICIAL_SERPIENTE);
         cuerpoSerpiente.push(segmento);
-        array_Juego[segmento.posX][segmento.posY] = segmento.estado; //Pinto cabeza
+        array_Juego[segmento.posX][segmento.posY] = SERPIENTE; //Pinto serpiente
         generarPosicionesPowerUP(manzana);
-        array_Juego[manzana.posX][manzana.posY] = manzana.estado; //Pinto manzana
+        array_Juego[manzana.posX][manzana.posY] = MANZANA; //Pinto manzana
         for (let x = 0; x < TABLERO_TAM; x++) {
+            pixeles[x] = [];
             for (let y = 0; y < TABLERO_TAM; y++) {
                 const pixel = document.createElement("div");
-                pixel.dataset.x = `${x}`;
-                pixel.dataset.y = `${y}`;
-                pixel.style.left = `${x * PIXEL_TAM}px`;
-                pixel.style.top = `${y * PIXEL_TAM}px`;
-                pixel.style.width = `${PIXEL_TAM}px`;
-                pixel.style.height = `${PIXEL_TAM}px`;
-                pixel.style.position = "absolute";
                 const estado = array_Juego[x][y];
-                pintarPixeles(estado, pixel);
+                pixeles[x][y] = pixel;
+                darEstiloPixel(pixel, estado, x, y);
                 frag.appendChild(pixel);
             }
         }
         tablero.childNodes.forEach(elemento => elemento.remove());
         tablero.appendChild(frag);
     }
-
-    inicio();
-
      function actualizarArrayJuego(){
          for (let x = 0; x < TABLERO_TAM; x++) {
              for (let y = 0; y < TABLERO_TAM; y++) {
-                array_Juego[x][y] = 0;
+                array_Juego[x][y] = FONDO;
              }
          }
          cuerpoSerpiente.forEach(segmento => {
-            array_Juego[segmento.posX][segmento.posY] = segmento.estado;
+            array_Juego[segmento.posX][segmento.posY] = SERPIENTE;
          });
-         array_Juego[manzana.posX][manzana.posY] = manzana.estado;
+         array_Juego[manzana.posX][manzana.posY] = MANZANA;
      }
 
-    function animacionJuego(){
-        const pixeles = document.querySelectorAll(`[data-status]`);
-        pixeles.forEach(pixel =>{
-            let estado = parseInt(pixel.dataset.status); //ESTADO ANTES DE HACER CAMBIOS
-            let posX = parseInt(pixel.dataset.x);
-            let posY = parseInt(pixel.dataset.y);
-            //El estado cambiado en el array_Juego pero no reflejado en el tablero
-            let estadoArr = array_Juego[posX][posY];
-            if (estado !== estadoArr){
-                pintarPixeles(estadoArr, pixel);
+    function actualizarPixeles(){
+        for (let x = 0; x < TABLERO_TAM; x++) {
+            for (let y = 0; y < TABLERO_TAM; y++) {
+                const estado = array_Juego[x][y];
+                const pixel = pixeles[x][y];
+                if (pixel.dataset.status !== `${estado}`){
+                    pintarPixeles(estado, pixel);
+                }
             }
-        })
-
+        }
     }
     //AQUI puedo pasar un objeto porque hace un paso por referencia entonces si es correcto
     function generarPosicionesPowerUP(powerup){
@@ -115,10 +125,13 @@ window.onload = ()=> {
     }
 
     function manejarColisiones(cabeza , nuevaPos){
+        if (nuevaPos.x < 0 || nuevaPos.x >= array_Juego.length || nuevaPos.y < 0 || nuevaPos.y >= array_Juego[0].length) {
+            return false;
+        }
         let colisiones = array_Juego[ nuevaPos.x ][nuevaPos.y];
         if (colisiones !== 0){
             if (colisiones === 2){ // Veo si se come una manzana aqui crece
-                const segmento = newSegmento(SERPIENTE,nuevaPos.x, nuevaPos.y);
+                const segmento = newSegmento(nuevaPos.x, nuevaPos.y);
                 cuerpoSerpiente.unshift(segmento); //Añado al principio del array
                 generarPosicionesPowerUP(manzana);
             }
@@ -133,9 +146,13 @@ window.onload = ()=> {
             cabeza.posX = nuevaPos.x;
             cabeza.posY = nuevaPos.y;
         }
-        actualizarArrayJuego();
-        animacionJuego();
+
+        actualizarRecursos();
         return true;
+    }
+    function actualizarRecursos() {
+        actualizarArrayJuego();
+        actualizarPixeles();
     }
 
     function gameOver() {
@@ -146,54 +163,60 @@ window.onload = ()=> {
         let nuevaPos = {
             x: cabeza.posX,
             y: cabeza.posY,
+        };
+
+        if (!codigo && ultimaDireccion) {
+            codigo = ultimaDireccion;
         }
 
-        let control = false;
-
-        switch (codigo) {
-            case "ArrowLeft" : {
-                if (nuevaPos.x - 1 < 0 ) control = true;
-                nuevaPos.x--;
-                break;
-            }
-            case "ArrowRight" : {
-                if (nuevaPos.x + 1 >= TABLERO_TAM ) control = true;
-                nuevaPos.x++;
-                break;
-            }
-            case "ArrowDown" : {
-                if (nuevaPos.y + 1 >= TABLERO_TAM ) control = true;
-                nuevaPos.y++;
-                break;
-            }
-            case "ArrowUp" : {
-                if (nuevaPos.y - 1 < 0 ) control = true;
-                nuevaPos.y--;
-                break;
-            }
+        const direccionNueva = direccion[codigo];
+        if (direccionNueva) {
+            nuevaPos.x += direccionNueva.x;
+            nuevaPos.y += direccionNueva.y;
         }
-        if (control) gameOver();
+
+        if (codigo) ultimaDireccion = codigo;
         return nuevaPos;
     }
 
+
     function manejarEventoMovimiento(event){
-        event.preventDefault();
-        let cabezaSerpiente = cuerpoSerpiente[0];
-        let finalJuego = false;
+         if (event.code !== null) {
+             if (event.preventDefault) {
+                 event.preventDefault();
+             }
+             let cabezaSerpiente = cuerpoSerpiente[0];
+             let finalJuego = false;
 
-        const nuevaPos = getNuevaPosicion(event.code, cabezaSerpiente);
+             const nuevaPos = getNuevaPosicion(event.code, cabezaSerpiente);
 
-        if (nuevaPos.x !== cabezaSerpiente.posX || nuevaPos.y !== cabezaSerpiente.posY){
-            if (!manejarColisiones(cabezaSerpiente, nuevaPos)) {
-                finalJuego = true
-            }
-        }
+             if (nuevaPos.x !== cabezaSerpiente.posX || nuevaPos.y !== cabezaSerpiente.posY) {
+                 if (!manejarColisiones(cabezaSerpiente, nuevaPos)) {
+                     finalJuego = true
+                 }
+             }
 
-        if (finalJuego) {
-            gameOver();
-        }
+             if (finalJuego) {
+                 gameOver();
+             }
+         }
+    }
+
+    function animacionJuego(tiempoActual){
+        requestAnimationFrame(animacionJuego);
+         const deltaTiempo = tiempoActual - ultimoTiempo;
+         if (deltaTiempo < intervalo) {
+             return;
+         }
+         ultimoTiempo = tiempoActual;
+         if (ultimaDireccion) {
+             manejarEventoMovimiento({code: ultimaDireccion});
+         }
+
     }
 
     // Se mueve la serpiente
     window.addEventListener("keydown", manejarEventoMovimiento);
+    inicio();
+    requestAnimationFrame(animacionJuego);
 }

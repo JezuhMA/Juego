@@ -22,8 +22,8 @@ export default function Snake(posiciones) {
             // Mover cada segmento de la serpiente a la posición del segmento anterior
             this.moverSegmentos();
 
-            // Mover la cabeza de la serpiente
             this.cuerpo[0].posicion.x += movX;
+            // Mover la cabeza de la serpiente
             this.cuerpo[0].posicion.y += movY;
             //TODO: comprobar que no se agrergue un nuevo segmento para el tema de identificar la serpiente con la antiguaposicion
             return { nuevaPosicion: this.cuerpo[0].posicion, antiguaPosicion: nuevoSegmento.posicion };
