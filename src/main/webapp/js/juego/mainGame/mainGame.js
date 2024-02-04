@@ -9,8 +9,10 @@ window.onload = () => {
     const pixeles = [];
     // ESTADOS
     const FONDO = 0;
-    const SERPIENTE = 1;
-    const MANZANA = 2;
+    const CABEZA_SERPIENTE = 1;
+    const CUELLO_SERPIENTE = 2;
+    const CUERPO = 3;
+    const MANZANA = 4;
     let ultimaDireccion = null;
     const direccion = {
         ArrowLeft: { x: -1, y: 0 },
@@ -21,24 +23,27 @@ window.onload = () => {
     const COLORES= {
         0 : "fondo",
         1 : "serpiente",
-        2 : "manzana",
+        2 : "serpiente",
+        3 : "serpiente",
+        4 : "manzana",
     }
     let ultimoTiempo = 0;
     const FPS = 15; // Los FPS que deseas
     const intervalo = 1000 / FPS; // Intervalo de tiempo en ms
 
-    function newSegmento(positionX, positionY) {
+    function newSegmento(estado, positionX, positionY) {
         return {
+            estado: estado,
             posX: positionX,
             posY: positionY,
         };
     }
 //Posiblemente necesite algo asi pa mantener la serpiente localizada
     const cuerpoSerpiente = [];
-    const manzana = newSegmento();
+    const manzana = newSegmento(MANZANA);
 	const frag = document.createDocumentFragment();
     const array_Juego = [];
-    const POSX_INICIAL_SERPIENTE = 39;
+    const POSX_INICIAL_SERPIENTE = 38;
     const POSY_INICIAL_SERPIENTE = 20;
 
     function initArrayJuego() {
@@ -71,11 +76,14 @@ window.onload = () => {
         // AQUI RECORRO EL ARRAY Y PINTO LOS PIXELES
         const tablero = document.querySelector("#tablero");
         initArrayJuego();
-        const segmento = newSegmento(POSX_INICIAL_SERPIENTE, POSY_INICIAL_SERPIENTE);
-        cuerpoSerpiente.push(segmento);
-        array_Juego[segmento.posX][segmento.posY] = SERPIENTE; //Pinto serpiente
+        const cabeza = newSegmento(CABEZA_SERPIENTE, POSX_INICIAL_SERPIENTE, POSY_INICIAL_SERPIENTE);
+        const cuello = newSegmento(CUELLO_SERPIENTE, POSX_INICIAL_SERPIENTE + 1, POSY_INICIAL_SERPIENTE);
+        cuerpoSerpiente.push(cabeza);
+        cuerpoSerpiente.push(cuello);
+        array_Juego[cabeza.posX][cabeza.posY] = cabeza.estado; //Pinto serpiente
+        array_Juego[cuello.posX][cuello.posY] = cuello.estado;
         generarPosicionesPowerUP(manzana);
-        array_Juego[manzana.posX][manzana.posY] = MANZANA; //Pinto manzana
+        array_Juego[manzana.posX][manzana.posY] = manzana.estado; //Pinto manzana
         for (let x = 0; x < TABLERO_TAM; x++) {
             pixeles[x] = [];
             for (let y = 0; y < TABLERO_TAM; y++) {
@@ -96,9 +104,9 @@ window.onload = () => {
              }
          }
          cuerpoSerpiente.forEach(segmento => {
-            array_Juego[segmento.posX][segmento.posY] = SERPIENTE;
+            array_Juego[segmento.posX][segmento.posY] = segmento.estado;
          });
-         array_Juego[manzana.posX][manzana.posY] = MANZANA;
+         array_Juego[manzana.posX][manzana.posY] = manzana.estado;
      }
 
     function actualizarPixeles(){
@@ -129,13 +137,16 @@ window.onload = () => {
             return false;
         }
         let colisiones = array_Juego[ nuevaPos.x ][nuevaPos.y];
-        if (colisiones !== 0){
-            if (colisiones === 2){ // Veo si se come una manzana aqui crece
-                const segmento = newSegmento(nuevaPos.x, nuevaPos.y);
-                cuerpoSerpiente.unshift(segmento); //Añado al principio del array
+        if (colisiones !== FONDO){
+            if (colisiones === MANZANA){ // Veo si se come una manzana aqui crece
+                const segmento = newSegmento(CUERPO, nuevaPos.x, nuevaPos.y);
+                cuerpoSerpiente.push(segmento); //Añado al principio del array
                 generarPosicionesPowerUP(manzana);
             }
-            else if (colisiones === 1){ //veo que no se coma a si misma
+            else if (colisiones === CUELLO_SERPIENTE){
+                //Aqui tengo que mantener la direccion de la serpiente
+            }
+            else if (colisiones === CUERPO){ //veo que no se coma a si misma
                 return false;
             }
         }else { // Aqui avanza normal
