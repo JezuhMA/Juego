@@ -13,20 +13,13 @@ window.onload = () => {
     const CUELLO_SERPIENTE = 2;
     const CUERPO = 3;
     const MANZANA = 4;
-    let ultimaDireccion = null;
     const direccion = {
         ArrowLeft: { x: -1, y: 0 },
         ArrowRight: { x: 1, y: 0 },
         ArrowUp: { x: 0, y: -1 },
         ArrowDown: { x: 0, y: 1 },
     };
-    const COLORES= {
-        0 : "fondo",
-        1 : "serpiente",
-        2 : "serpiente",
-        3 : "serpiente",
-        4 : "manzana",
-    }
+    let ultimaDireccion = "ArrowLeft";
     let ultimoTiempo = 0;
     const FPS = 15; // Los FPS que deseas
     const intervalo = 1000 / FPS; // Intervalo de tiempo en ms
@@ -55,20 +48,18 @@ window.onload = () => {
         }
     }
     function darEstiloPixel(pixel, estado, x, y) {
-        pixel.dataset.x = `${x}`;
-        pixel.dataset.y = `${y}`;
         pixel.style.left = `${x * PIXEL_TAM}px`;
         pixel.style.top = `${y * PIXEL_TAM}px`;
         pixel.classList.add("pixel");
         pixel.dataset.status = `${estado}`;
-        pixel.classList.add(COLORES[estado]);
     }
+    /*
+        Esta funcion comprueba que si cambia el estatus del pixel en el array_juego
+          se actualiza en el array de pixeles
+     */
     function pintarPixeles(estado, pixel){
         if(pixel.dataset.status === estado) return;
-        const clase = pixel.dataset.status;
         pixel.dataset.status = `${estado}`;
-        pixel.classList.remove(COLORES[clase]);
-        pixel.classList.add(COLORES[estado]);
     }
 
     //ESTA FUNCION INICIA EL JUEGO
@@ -133,13 +124,11 @@ window.onload = () => {
     }
 //TODO: mejorar la puta serpiente
     function actualizarSerpiente(){
-        for (let i = 0; i < cuerpoSerpiente.length - 1; i++) {
-            if (i === 0){
-                cuerpoSerpiente[i].estado = CABEZA_SERPIENTE;
+        for (let i = 0; i < cuerpoSerpiente.length; i++) {
+            if (i !== 0 && i !== 1){
+                cuerpoSerpiente[i].estado = CUERPO;
             }else if (i === 1){
                 cuerpoSerpiente[i].estado = CUELLO_SERPIENTE;
-            }else{
-                cuerpoSerpiente[i].estado = CUERPO;
             }
         }
     }
@@ -150,13 +139,14 @@ window.onload = () => {
         let colisiones = array_Juego[ nuevaPos.x ][nuevaPos.y];
         if (colisiones !== FONDO){
             if (colisiones === MANZANA){ // Veo si se come una manzana aqui crece
-                const segmento = newSegmento(CUERPO, nuevaPos.x, nuevaPos.y);
+                const segmento = newSegmento(CABEZA_SERPIENTE, nuevaPos.x, nuevaPos.y);
                 cuerpoSerpiente.unshift(segmento); //Añado al principio del array
                 actualizarSerpiente();
                 generarPosicionesPowerUP(manzana);
             }
             else if (colisiones === CUELLO_SERPIENTE){
                 //Aqui tengo que mantener la direccion de la serpiente
+
             }
             else if (colisiones === CUERPO){ //veo que no se coma a si misma
                 return false;
@@ -193,6 +183,14 @@ window.onload = () => {
         }
 
         const direccionNueva = direccion[codigo];
+        // Comprobar si la nueva dirección es opuesta a la última dirección
+        if (ultimaDireccion && direccionNueva) {
+            const ultimaDireccionVector = direccion[ultimaDireccion];
+            if (ultimaDireccionVector.x === -direccionNueva.x && ultimaDireccionVector.y === -direccionNueva.y) {
+                codigo = ultimaDireccion;  // Mantén la última dirección si la nueva dirección es opuesta
+            }
+        }
+
         if (direccionNueva) {
             nuevaPos.x += direccionNueva.x;
             nuevaPos.y += direccionNueva.y;
@@ -201,7 +199,6 @@ window.onload = () => {
         if (codigo) ultimaDireccion = codigo;
         return nuevaPos;
     }
-
 
     function manejarEventoMovimiento(event){
          if (event.code !== null) {
@@ -235,11 +232,10 @@ window.onload = () => {
          if (ultimaDireccion) {
              manejarEventoMovimiento({code: ultimaDireccion});
          }
-
     }
 
     // Se mueve la serpiente
     window.addEventListener("keydown", manejarEventoMovimiento);
     inicio();
-    requestAnimationFrame(animacionJuego);
+    animacionJuego();
 }
