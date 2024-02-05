@@ -131,7 +131,18 @@ window.onload = () => {
          powerup.posY = y;
          powerup.posX = x;
     }
-
+//TODO: mejorar la puta serpiente
+    function actualizarSerpiente(){
+        for (let i = 0; i < cuerpoSerpiente.length - 1; i++) {
+            if (i === 0){
+                cuerpoSerpiente[i].estado = CABEZA_SERPIENTE;
+            }else if (i === 1){
+                cuerpoSerpiente[i].estado = CUELLO_SERPIENTE;
+            }else{
+                cuerpoSerpiente[i].estado = CUERPO;
+            }
+        }
+    }
     function manejarColisiones(cabeza , nuevaPos){
         if (nuevaPos.x < 0 || nuevaPos.x >= array_Juego.length || nuevaPos.y < 0 || nuevaPos.y >= array_Juego[0].length) {
             return false;
@@ -140,7 +151,8 @@ window.onload = () => {
         if (colisiones !== FONDO){
             if (colisiones === MANZANA){ // Veo si se come una manzana aqui crece
                 const segmento = newSegmento(CUERPO, nuevaPos.x, nuevaPos.y);
-                cuerpoSerpiente.push(segmento); //Añado al principio del array
+                cuerpoSerpiente.unshift(segmento); //Añado al principio del array
+                actualizarSerpiente();
                 generarPosicionesPowerUP(manzana);
             }
             else if (colisiones === CUELLO_SERPIENTE){
