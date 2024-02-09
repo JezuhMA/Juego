@@ -1,53 +1,201 @@
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
+
+:root {
+    overflow: hidden;
+}
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    outline: none;
 }
 
-.juego,#enemigos{
-    width: 75%;
-    height: inherit;
+body {
+    background: #000d36;
+    color: white;
+}
+
+#tablero {
+    margin-left: 50%;
+    margin-top: 2%;
+    transform: translateX(-50%);
+}
+.pixel {
     position: absolute;
-    right: 25vw;
-    background-color: transparent;
+    height: 1.5em;
+    width: 1.5em;
+    border: 1px solid rgba(145, 145, 145, 0.54);
 }
-#enemigos{
-    width: 100%;
-    right: 0%;
-}
-.lateral{
-    background: fixed blue;
-    position:absolute;
-    right: 0;
-    width: 25%;
-    height: 100%;
-}
-.frame{
-    width: 100%;
-    height: 100%;
-    position: fixed;
-    overflow: hidden;
-}
-#nave{
-    width: 30px;
-    height: 30px;
-    background: red;
+
+
+#game_over {
     position: absolute;
-    bottom: 0;
-    z-index: 1;
+    top: 38%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 3em;
+    text-transform: uppercase;
+    font-family: "Press Start 2P", cursive;
 }
-.disparo{
-    width: 3px;
-    height: 6px;
-    background-color: blue;
-    position: fixed;
-}
-.enemigo{
-    width: 30px;
-    height: 30px;
-    background: blue;
+#recogerdatos{
     position: absolute;
-    bottom: 0;
-    z-index: 1;
+    background-color: #000d36;
+    border-radius: 10px;
+    margin: 0;
+    top: 50%;
+    left: 50%;
+    width: 320px;
+    padding: 10px;
+    transform: translateX(-50%);
+    font-family: "Press Start 2P", cursive;
+    color: lightseagreen;
+}
+#recogerdatos input{
+    padding: 10px;
+    width: 275px;
+
+    font-size: 0.75em;
+    font-family: "Press Start 2P", cursive;
+    color: lightseagreen;
+    border: 1px solid lightgreen;
+    margin: 5px;
+    border-radius: 10px;
+}
+#recogerdatos button{
+    padding: 10px;
+    width: fit-content;
+    font-size: 0.75em;
+    font-family: "Press Start 2P", cursive;
+    color: lightseagreen;
+    border: 1px solid lightgreen;
+    margin: 5px;
+    border-radius: 10px;
+}
+#tablaPuntuaciones{
+    position: absolute;
+    top: 30%;
+    right: 5%;
+    transform: translateX(-5%);
+    font-size: 1.5em;
+    font-family: "Press Start 2P", sans-serif;
+    padding: 10px;
+    color: yellowgreen;
+}
+
+#tablaPuntuacionesContenido{
+    list-style: decimal;
+    padding: 10px;
+    font-size: 0.85em;
+    position: relative;
+    top: 10px;
+    left: 13%;
+}
+#tablaPuntuacionesContenido li{
+    padding: 10px;
+    color: lightgreen;
+    font-size: 0.85em;
+    position: relative;
+    top: 10px;
+    left: 13%;
+}
+
+#puntuacion {
+    position: absolute;
+    font-size: larger;
+    top: 75px;
+    right: 9%;
+    text-transform: uppercase;
+    font-family: Arial, Helvetica, sans-serif;
+    border: 1px solid #cccccc;
+    padding: 12px;
+    border-radius: 25px;
+    box-shadow: inset 0 0 8px lightgreen;
+    color: #cccccc;
+}
+
+
+#puntuacion_max {
+    position: absolute;
+    top: 25px;
+    right: 5%;
+    color: yellow;
+    font-family: "Press Start 2P", cursive;
+}
+
+#controles {
+    position: absolute;
+    top: 40%;
+    left: 10%;
+    display: flex;
+    flex-direction: column;
+}
+
+#control-keys {
+    top: 200px;
+    left: 7%;
+    position: absolute;
+    color: #ccccccd7;
+    padding: 12px;
+    font-size: 1.2em;
+    line-height: 48px;
+    box-shadow: 0 0 8px lightgreen;
+}
+
+#control-head {
+    text-align: center;
+    font-family: "Press Start 2P", cursive;
+}
+.control-button{
+    position: relative;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.5em;
+    color: #cccccc;
+    text-shadow: 0 0 8px lightgreen;
+}
+#control-up::after {
+    content: url("controles/flecha-arriba.png");
+    position: relative;
+    left: 10px;
+}
+#control-down::after {
+    content: url("controles/flecha-hacia-abajo.png");
+    position: relative;
+    left: 10px;
+}
+#control-left::after {
+    content: url("controles/flecha-izquierda.png");
+    position: relative;
+    left: 10px;
+}
+#control-right::after {
+    content: url("controles/flecha-derecha.png");
+    position: relative;
+    left: 10px;
+}
+
+#play {
+    position: absolute;
+    top: 38%;
+    left: 45%;
+    transform: translateX(-45%);
+    font-family: "Press Start 2P", cursive;
+    font-size: 1.3em;
+    padding: 20px;
+    color: lightgreen;
+    animation: animate-play 1.4s linear infinite;
+}
+
+@keyframes animate-play {
+    0% {
+        text-shadow: 0 0 4px lightgreen;
+    }
+    50% {
+        text-shadow: 0 0 8px lightgreen;
+    }
+    100% {
+        text-shadow: 0 0 4px lightgreen;
+    }
 }

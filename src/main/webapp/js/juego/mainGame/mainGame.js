@@ -4,25 +4,38 @@
  * @returns {void}
  */
 window.onload = () => {
-    const PIXEL_TAM = 10;
-	const TABLERO_TAM = 40;
+    const separacionPixeles = 1.5;    // em
+	const TABLERO_X = 30;
+    const tableroArr = [];
     const pixeles = [];
     // ESTADOS
     const FONDO = 0;
     const CABEZA_SERPIENTE = 1;
-    const CUELLO_SERPIENTE = 2;
-    const CUERPO = 3;
-    const MANZANA = 4;
-    const direccion = {
+    const CUERPO = 2;
+    const MANZANA = 3;
+    const DIRECCION = {
         ArrowLeft: { x: -1, y: 0 },
         ArrowRight: { x: 1, y: 0 },
         ArrowUp: { x: 0, y: -1 },
         ArrowDown: { x: 0, y: 1 },
+        KeyW: { x: 0, y: -1 },
+        KeyA: { x: -1, y: 0 },
+        KeyS: { x: 0, y: 1 },
+        KeyD: { x: 1, y: 0 },
     };
-    let ultimaDireccion = "ArrowLeft";
-    let ultimoTiempo = 0;
-    const FPS = 15; // Los FPS que deseas
+    let codigoDireccionActual;
+    let puntuacion = 0;
+    let juegoTerminado = false;
+    let idIntervalo;
+
+    const FPS = 10; // Los FPS que deseas
     const intervalo = 1000 / FPS; // Intervalo de tiempo en ms
+
+    const cuerpoSerpiente = [];
+    const manzana = newSegmento(MANZANA);
+    const POSX_INICIAL_SERPIENTE = 28;
+    const POSY_INICIAL_SERPIENTE = 15;
+
 
     function newSegmento(estado, positionX, positionY) {
         return {
@@ -31,25 +44,9 @@ window.onload = () => {
             posY: positionY,
         };
     }
-//Posiblemente necesite algo asi pa mantener la serpiente localizada
-    const cuerpoSerpiente = [];
-    const manzana = newSegmento(MANZANA);
-	const frag = document.createDocumentFragment();
-    const array_Juego = [];
-    const POSX_INICIAL_SERPIENTE = 38;
-    const POSY_INICIAL_SERPIENTE = 20;
-
-    function initArrayJuego() {
-        for (let i = 0; i < TABLERO_TAM; i++) {
-            array_Juego[i] = [0];
-            for (let j = 0; j < TABLERO_TAM; j++) {
-                array_Juego[i][j] = FONDO;
-            }
-        }
-    }
     function darEstiloPixel(pixel, estado, x, y) {
-        pixel.style.left = `${x * PIXEL_TAM}px`;
-        pixel.style.top = `${y * PIXEL_TAM}px`;
+        pixel.style.left = `${x * separacionPixeles}em`;
+        pixel.style.top = `${y * separacionPixeles}em`;
         pixel.classList.add("pixel");
         pixel.dataset.status = `${estado}`;
     }
@@ -61,26 +58,46 @@ window.onload = () => {
         if(pixel.dataset.status === estado) return;
         pixel.dataset.status = `${estado}`;
     }
-
+    function actualizarPuntuacion (){
+        document.querySelector("#puntuacion").textContent = `Puntuacion: ${puntuacion}`;
+        if (puntuacion >= localStorage.getItem("maxPuntuacion")) {
+            localStorage.setItem("maxPuntuacion", `${puntuacion}`);
+            document.querySelector("#puntuacion_max").textContent = `Puntuacion mas alta: ${localStorage.getItem("maxPuntuacion")}`;
+        }
+    }
     //ESTA FUNCION INICIA EL JUEGO
-    function inicio() {
-        // AQUI RECORRO EL ARRAY Y PINTO LOS PIXELES
-        const tablero = document.querySelector("#tablero");
-        initArrayJuego();
+    function initSerpiente() {
         const cabeza = newSegmento(CABEZA_SERPIENTE, POSX_INICIAL_SERPIENTE, POSY_INICIAL_SERPIENTE);
-        const cuello = newSegmento(CUELLO_SERPIENTE, POSX_INICIAL_SERPIENTE + 1, POSY_INICIAL_SERPIENTE);
+        const cuello = newSegmento(CUERPO, POSX_INICIAL_SERPIENTE + 1, POSY_INICIAL_SERPIENTE);
         cuerpoSerpiente.push(cabeza);
         cuerpoSerpiente.push(cuello);
-        array_Juego[cabeza.posX][cabeza.posY] = cabeza.estado; //Pinto serpiente
-        array_Juego[cuello.posX][cuello.posY] = cuello.estado;
-        generarPosicionesPowerUP(manzana);
-        array_Juego[manzana.posX][manzana.posY] = manzana.estado; //Pinto manzana
-        for (let x = 0; x < TABLERO_TAM; x++) {
-            pixeles[x] = [];
-            for (let y = 0; y < TABLERO_TAM; y++) {
+        return {cabeza, cuello};
+    }
+
+    function definirPixelStatus(x, y, cabeza, cuello, manzana) {
+        let estado = FONDO;
+        if (x === cabeza.posX && y === cabeza.posY) {
+            estado = CABEZA_SERPIENTE;
+        }
+        else if (x === cuello.posX && y === cuello.posY) {
+            estado = CUERPO;
+        }
+        else if (x === manzana.posX && y === manzana.posY) {
+            estado = MANZANA;
+        }
+        return estado;
+    }
+
+    function generarTablero(cabeza, cuello, manzana) {
+        const tablero = document.querySelector("#tablero");
+        const frag = document.createDocumentFragment();
+        for (let x = 0; x < TABLERO_X; x++) {
+            tableroArr[x] = [];
+            for (let y = 0; y < TABLERO_X; y++) {
                 const pixel = document.createElement("div");
-                const estado = array_Juego[x][y];
-                pixeles[x][y] = pixel;
+                const estado = definirPixelStatus(x, y, cabeza, cuello, manzana);
+                tableroArr[x][y] = estado;
+                pixeles.push(pixel);
                 darEstiloPixel(pixel, estado, x, y);
                 frag.appendChild(pixel);
             }
@@ -88,23 +105,45 @@ window.onload = () => {
         tablero.childNodes.forEach(elemento => elemento.remove());
         tablero.appendChild(frag);
     }
+
+    function initTablaPuntuacion(){
+        const tablaPuntuaciones = document.querySelector("#tablaPuntuacionesContenido");
+        const arrayUsuarios = obtenerDatosUsuarios();
+        const frag = document.createDocumentFragment();
+        tablaPuntuaciones.childNodes.forEach(elemento => elemento.remove());
+        arrayUsuarios.sort((a, b) => b.puntuacion - a.puntuacion);
+        arrayUsuarios.forEach(usuario => {
+            const registro = document.createElement("li");
+            registro.textContent = `${usuario.nombre}: ${usuario.puntuacion}`;
+            frag.appendChild(registro);
+        });
+        tablaPuntuaciones.appendChild(frag);
+    }
+
+    function inicio() {
+        const {cabeza, cuello} = initSerpiente();
+        generarPosicionesManzana(manzana);
+        generarTablero(cabeza, cuello, manzana);
+        initTablaPuntuacion();
+        actualizarPuntuacion();
+    }
      function actualizarArrayJuego(){
-         for (let x = 0; x < TABLERO_TAM; x++) {
-             for (let y = 0; y < TABLERO_TAM; y++) {
-                array_Juego[x][y] = FONDO;
+         for (let x = 0; x < TABLERO_X; x++) {
+             for (let y = 0; y < TABLERO_X; y++) {
+                 tableroArr[x][y] = FONDO;
              }
          }
          cuerpoSerpiente.forEach(segmento => {
-            array_Juego[segmento.posX][segmento.posY] = segmento.estado;
+             tableroArr[segmento.posX][segmento.posY] = segmento.estado;
          });
-         array_Juego[manzana.posX][manzana.posY] = manzana.estado;
+         tableroArr[manzana.posX][manzana.posY] = manzana.estado;
      }
 
-    function actualizarPixeles(){
-        for (let x = 0; x < TABLERO_TAM; x++) {
-            for (let y = 0; y < TABLERO_TAM; y++) {
-                const estado = array_Juego[x][y];
-                const pixel = pixeles[x][y];
+    function actualizarPixelesJuego(){
+        for (let x = 0; x < TABLERO_X; x++) {
+            for (let y = 0; y < TABLERO_X; y++) {
+                const estado = tableroArr[x][y];
+                const pixel = pixeles[x * TABLERO_X + y]; //Aqui obtengo el pixel que corresponde
                 if (pixel.dataset.status !== `${estado}`){
                     pintarPixeles(estado, pixel);
                 }
@@ -112,41 +151,39 @@ window.onload = () => {
         }
     }
     //AQUI puedo pasar un objeto porque hace un paso por referencia entonces si es correcto
-    function generarPosicionesPowerUP(powerup){
+    function generarPosicionesManzana(manzana){
          let x , y;
          do {
-             x = Math.floor(Math.random()*TABLERO_TAM);
-             y = Math.floor(Math.random()*TABLERO_TAM);
+             x = Math.floor(Math.random()*TABLERO_X);
+             y = Math.floor(Math.random()*TABLERO_X);
 
          }while (!cuerpoSerpiente.every(segmento => x !== segmento.posX && y !== segmento.posY))
-         powerup.posY = y;
-         powerup.posX = x;
+         manzana.posY = y;
+         manzana.posX = x;
     }
-//TODO: mejorar la puta serpiente
+
     function actualizarSerpiente(){
         for (let i = 0; i < cuerpoSerpiente.length; i++) {
             if (i !== 0 && i !== 1){
                 cuerpoSerpiente[i].estado = CUERPO;
             }else if (i === 1){
-                cuerpoSerpiente[i].estado = CUELLO_SERPIENTE;
+                cuerpoSerpiente[i].estado = CUERPO;
             }
         }
     }
     function manejarColisiones(cabeza , nuevaPos){
-        if (nuevaPos.x < 0 || nuevaPos.x >= array_Juego.length || nuevaPos.y < 0 || nuevaPos.y >= array_Juego[0].length) {
+        if (nuevaPos.x < 0 || nuevaPos.x >= TABLERO_X || nuevaPos.y < 0 || nuevaPos.y >= TABLERO_X) {
             return false;
         }
-        let colisiones = array_Juego[ nuevaPos.x ][nuevaPos.y];
+        let colisiones = tableroArr[ nuevaPos.x ][nuevaPos.y];
         if (colisiones !== FONDO){
             if (colisiones === MANZANA){ // Veo si se come una manzana aqui crece
                 const segmento = newSegmento(CABEZA_SERPIENTE, nuevaPos.x, nuevaPos.y);
                 cuerpoSerpiente.unshift(segmento); //Añado al principio del array
                 actualizarSerpiente();
-                generarPosicionesPowerUP(manzana);
-            }
-            else if (colisiones === CUELLO_SERPIENTE){
-                //Aqui tengo que mantener la direccion de la serpiente
-
+                puntuacion ++;
+                actualizarPuntuacion();
+                generarPosicionesManzana(manzana);
             }
             else if (colisiones === CUERPO){ //veo que no se coma a si misma
                 return false;
@@ -165,11 +202,65 @@ window.onload = () => {
     }
     function actualizarRecursos() {
         actualizarArrayJuego();
-        actualizarPixeles();
+        actualizarPixelesJuego();
+    }
+    function gameOver() {
+        if (idIntervalo) {
+            clearInterval(idIntervalo);
+        }
+        window.removeEventListener("keyup", manejarEventoMovimiento);
+        const dialog = document.querySelector("#recogerdatos");
+        const form = document.querySelector("#formulario");
+        dialog.showModal();
+        form.addEventListener("submit", (event) => {
+            event.preventDefault();
+            const nombre = form.nombre.value;
+            console.log(nombre);
+            guardarDatosUsuario(nombre, puntuacion);
+            dialog.close();
+            window.location.reload();
+        });
+        document.querySelector("#game_over").style.display = "block";
     }
 
-    function gameOver() {
-        //ACABAR EL JUEGO
+    function guardarDatosUsuario(nombre, puntuacion) {
+        // Crear un objeto de usuario con el nombre y puntuación
+        let usuario = {
+            nombre: nombre,
+            puntuacion: puntuacion
+        };
+
+        // Obtener la lista existente de usuarios
+        let usuarios = localStorage.getItem('usuarios');
+
+        // Comprobar si la lista de usuarios es null (es decir, si no había usuarios almacenados previamente)
+        if (!usuarios) {
+            // Si no había lista de usuarios, creamos una con el usuario actual
+            usuarios = [usuario];
+        } else {
+            // Si había una lista de usuarios, la convertimos de JSON a un objeto JavaScript
+            usuarios = JSON.parse(usuarios);
+
+            // Agregar el usuario a la lista de usuarios
+            usuarios.push(usuario);
+        }
+
+        // Convertir la lista de usuarios a JSON y guardar en localStorage
+        localStorage.setItem('usuarios', JSON.stringify(usuarios));
+    }
+
+    function obtenerDatosUsuarios() {
+        // Obtener la lista de usuarios de localStorage
+        let usuarios = localStorage.getItem('usuarios');
+
+        // Comprobar si la lista de usuarios es null (es decir, si no había usuarios almacenados previamente)
+        if (!usuarios) {
+            // Si no había lista de usuarios, devolvemos un array vacío
+            return [];
+        }
+
+        // Si había usuarios, los convertimos de JSON a un objeto JavaScript y los devolvemos
+        return JSON.parse(usuarios);
     }
 
     function getNuevaPosicion(codigo, cabeza) {
@@ -178,64 +269,80 @@ window.onload = () => {
             y: cabeza.posY,
         };
 
-        if (!codigo && ultimaDireccion) {
-            codigo = ultimaDireccion;
+        if (!codigo && codigoDireccionActual) {
+            codigo = codigoDireccionActual;
         }
 
-        const direccionNueva = direccion[codigo];
-        // Comprobar si la nueva dirección es opuesta a la última dirección
-        if (ultimaDireccion && direccionNueva) {
-            const ultimaDireccionVector = direccion[ultimaDireccion];
-            if (ultimaDireccionVector.x === -direccionNueva.x && ultimaDireccionVector.y === -direccionNueva.y) {
-                codigo = ultimaDireccion;  // Mantén la última dirección si la nueva dirección es opuesta
-            }
-        }
-
+        const direccionNueva = validarDireccion(codigo, codigoDireccionActual);
         if (direccionNueva) {
             nuevaPos.x += direccionNueva.x;
             nuevaPos.y += direccionNueva.y;
         }
-
-        if (codigo) ultimaDireccion = codigo;
         return nuevaPos;
     }
 
+    function validarDireccion(codigo, codDireccionActual) {
+        const nuevaDireccion = DIRECCION[codigo];
+        if(nuevaDireccion && codDireccionActual){
+            const direccionActualCodigo = DIRECCION[codDireccionActual];
+            if (direccionActualCodigo.x === -nuevaDireccion.x && direccionActualCodigo.y === -nuevaDireccion.y) {
+                return direccionActualCodigo; //Aqui no se puede ir en la direccion contraria
+            }
+        }
+        if (codigo) codigoDireccionActual = codigo; //Aqui actualizo la direccion
+        return nuevaDireccion;
+    }
+
+    function quitarPlay(){
+        document.querySelector("#play").style.display = "none";
+    }
+    function comprobarKey(event){
+        return event.code === "ArrowLeft"
+            || event.code === "ArrowRight"
+            || event.code === "ArrowUp"
+            || event.code === "ArrowDown"
+            || event.code === "KeyW"
+            || event.code === "KeyA"
+            || event.code === "KeyS"
+            || event.code === "KeyD"
+    }
     function manejarEventoMovimiento(event){
-         if (event.code !== null) {
-             if (event.preventDefault) {
-                 event.preventDefault();
-             }
-             let cabezaSerpiente = cuerpoSerpiente[0];
-             let finalJuego = false;
+         if (comprobarKey(event)){
+            const codigo = event.code;
+            if (puntuacion === 0) {
+                quitarPlay();
+            }
+             if (event.code !== null) {
+                 if (event.preventDefault) {
+                     event.preventDefault();
+                 }
+                 let cabezaSerpiente = cuerpoSerpiente[0];
 
-             const nuevaPos = getNuevaPosicion(event.code, cabezaSerpiente);
+                 const nuevaPos = getNuevaPosicion(codigo, cabezaSerpiente);
 
-             if (nuevaPos.x !== cabezaSerpiente.posX || nuevaPos.y !== cabezaSerpiente.posY) {
-                 if (!manejarColisiones(cabezaSerpiente, nuevaPos)) {
-                     finalJuego = true
+                 if (nuevaPos.x !== cabezaSerpiente.posX || nuevaPos.y !== cabezaSerpiente.posY) {
+                     if (!manejarColisiones(cabezaSerpiente, nuevaPos)) {
+                         juegoTerminado = true
+                     }
                  }
              }
 
-             if (finalJuego) {
-                 gameOver();
-             }
-         }
+        }
+        if (juegoTerminado) {
+            gameOver();
+        }
     }
 
-    function animacionJuego(tiempoActual){
-        requestAnimationFrame(animacionJuego);
-         const deltaTiempo = tiempoActual - ultimoTiempo;
-         if (deltaTiempo < intervalo) {
-             return;
-         }
-         ultimoTiempo = tiempoActual;
-         if (ultimaDireccion) {
-             manejarEventoMovimiento({code: ultimaDireccion});
-         }
+    function animacionJuego(){
+        idIntervalo = setInterval(()=>{
+            if (codigoDireccionActual){
+                manejarEventoMovimiento({code: codigoDireccionActual});
+            }
+        }, intervalo);
     }
 
-    // Se mueve la serpiente
-    window.addEventListener("keydown", manejarEventoMovimiento);
+
+    window.addEventListener("keyup", manejarEventoMovimiento);
     inicio();
     animacionJuego();
 }
