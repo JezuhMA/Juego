@@ -1,35 +1,46 @@
 <!DOCTYPE html>
 <html lang="es">
+	<head>
+		<title>Juego de la Serpiente</title>
+		<link rel="stylesheet" href="css/juego/cssJuego.css" />
+	</head>
 
-<head>
-    <title>Juego de la Serpiente</title>
-    <style>
-        #tablero {
-            position: relative;
-            height: 400px;
-            width: 400px;
-        }
+	<body>
+		<div id="tablero">
+			<div id="puntuacion_max"></div>
+			<div id="puntuacion"></div>
+			<div id="tablaPuntuaciones">
+				<div id="tablaPuntuacionesTitulo">Tabla de puntuaciones</div>
+				<ul id="tablaPuntuacionesContenido"></ul>
+			</div>
+			<div id="controles">
+				<div id="control-head">Controles</div>
+				<div id="control-up" class="control-button">Arriba o W</div>
+				<div id="control-left" class="control-button">Izquierda o A</div>
+				<div id="control-right" class="control-button">Derecha o D</div>
+				<div id="control-down" class="control-button">Abajo o S</div>
+			</div>
+		</div>
 
-        .pixel {
-            position: absolute;
-            height: 20px;
-            width: 20px;
-            background-color: #000;
-        }
+		<div id="game_over" style="display: none">GAME OVER</div>
+		<div id="play">Pulsa uno de los controles</div>
+		<dialog id="recogerdatos">
+			<form id="formulario">
+				<label for="nombre">Nombre:</label>
+				<input
+					type="text"
+					id="nombre"
+					name="nombre"
+					pattern="[A-Za-z0-9\-_\.]{3,8}"
+					title="El nombre de usuario debe tener entre 3 y 8 caracteres
+                    y solo puede contener letras (mayusculas o minusculas),
+                     numeros, guiones bajos y guiones."
+					required
+				/>
+				<button>Enviar</button>
+			</form>
+		</dialog>
 
-        .manzana {
-            background-color: #f00;
-        }
-    </style>
-
-</head>
-
-<body>
-    <div id="tablero"></div>
-    <script type="module" src="js/juego/mainGame/mainGame.js"></script>
-    <script type="module" src="js/juego/mainGame/snake.js"></script>
-    <script type="module" src="js/juego/mainGame/pantallas.js"></script>
-    <script type="module" src="js/juego/mainGame/powerups.js"></script>
-</body>
-
+		<script src="js/juego/mainGame/mainGame.js"></script>
+	</body>
 </html>
