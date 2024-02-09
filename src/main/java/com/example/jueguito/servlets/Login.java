@@ -23,10 +23,10 @@ public class Login extends HttpServlet {
     MensajeBean mensajeBean;
     public void processRequest(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         if (request.getContentType() == null && request.getParameterMap().isEmpty()) {
-            response.sendRedirect("inicioSesion.jsp");
+            response.sendRedirect(getServletContext().getContextPath().concat("/inicioSesion.jsp"));
             return;
         }
-        Usuario usuario = null;
+        Usuario usuario;
         String status = request.getParameter("status");
         if (status.equals("OK")) {
             usuario = recuperarUser(request);
@@ -38,12 +38,13 @@ public class Login extends HttpServlet {
                 redirigirInicio(request, response);
             }
         } else {
-            redirigirRegistro(response);
+            mensajeBean.setMensajeAviso("Error al iniciar sesion");
+            redirigirInicio(request, response);
         }
     }
 
     private void redirigirInicio(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.getRequestDispatcher("inicioSesion.jsp").forward(request, response);
+        request.getRequestDispatcher("/inicioSesion.jsp").forward(request, response);
     }
 
     private Usuario recuperarUser(HttpServletRequest request) {
@@ -58,10 +59,6 @@ public class Login extends HttpServlet {
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         processRequest(request,response);
-    }
-
-    private void redirigirRegistro( HttpServletResponse response) throws IOException {
-        response.sendRedirect("registro.html");
     }
 
     private void redirigirJuego(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {

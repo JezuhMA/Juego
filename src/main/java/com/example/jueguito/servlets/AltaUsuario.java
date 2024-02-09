@@ -21,9 +21,11 @@ public class AltaUsuario extends HttpServlet {
     UsuarioService usuarioService;
     @Inject
     MensajeBean mensajeBean;
+    @Inject
+    UsuarioBean usuarioBean;
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
-            usuarioService.registrar(request);
+            usuarioBean.copiar(usuarioService.registrar(request));
             mensajeBean.setMensajeInfo("Usuario registrado con éxito");
         } catch (ParseException e) {
             mensajeBean.setMensajeError("Usuario no creado por la fecha: ".concat(e.getLocalizedMessage()));

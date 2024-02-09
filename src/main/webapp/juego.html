@@ -1,64 +1,46 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <title>Juego de la Serpiente</title>
-    <link rel="stylesheet" href="css/juego/cssJuego.css">
-    <style>
-
-        .pixel {
-            position: absolute;
-            height: 1.5em;
-            width: 1.5em;
-            border: 1px solid rgba(145, 145, 145, 0.54);
-        }
-        [data-status="0"] {
-
-        }
-        [data-status="1"]{
-            background-color: #0f0;
-        }
-        [data-status="1"]::before{
-             background-color: #0f0;
-        }
-        [data-status="2"]{
-            background-color: #00ff00;
-        }
-        [data-status="3"] {
-            background-color: #f00;
-        }
-    </style>
-
+    <link rel="stylesheet" href="css/juego/cssJuego.css" />
 </head>
 
 <body>
-    <div id="tablero"></div>
+<div id="tablero">
     <div id="puntuacion_max"></div>
     <div id="puntuacion"></div>
-    <div id="control-keys">
+    <div id="tablaPuntuaciones">
+        <div id="tablaPuntuacionesTitulo">Tabla de puntuaciones</div>
+        <ul id="tablaPuntuacionesContenido"></ul>
+    </div>
+    <div id="controles">
         <div id="control-head">Controles</div>
         <div id="control-up" class="control-button">Arriba o W</div>
         <div id="control-left" class="control-button">Izquierda o A</div>
         <div id="control-right" class="control-button">Derecha o D</div>
         <div id="control-down" class="control-button">Abajo o S</div>
     </div>
-    <div id="game_over" style="display: none">GAME OVER</div>
-    <div id="play">Pulsa uno de los controles</div>
-    <dialog id="recogerdatos">
-        <form id="formulario">
-            <label for="nombre">Nombre:</label>
-            <input type="text" id="nombre" name="nombre" pattern="[A-Za-z0-9\-_\.]{3,8}"
-                   title="El nombre de usuario debe tener entre 3 y 8 caracteres
-                    y solo puede contener letras (mayusculas o minusculas),
-                     numeros, guiones bajos y guiones." required>
-            <button>Enviar</button>
-        </form>
-    </dialog>
-    <div id="tablaPuntuaciones">
-        <div id="tablaPuntuacionesTitulo">Tabla de puntuaciones</div>
-        <ul id="tablaPuntuacionesContenido"></ul>
-    </div>
-    <script src="js/juego/mainGame/mainGame.js"></script>
-</body>
+</div>
 
+<div id="game_over" style="display: none">GAME OVER</div>
+<div id="play">Pulsa uno de los controles</div>
+<dialog id="recogerdatos">
+    <form id="formulario">
+        <label for="nombre">Nombre:</label>
+        <input
+                type="text"
+                id="nombre"
+                name="nombre"
+                pattern="[A-Za-z0-9\-_\.]{3,8}"
+                title="El nombre de usuario debe tener entre 3 y 8 caracteres
+                    y solo puede contener letras (mayusculas o minusculas),
+                     numeros, guiones bajos y guiones."
+                required
+        />
+        <button>Enviar</button>
+    </form>
+</dialog>
+
+<script src="js/juego/mainGame/mainGame.js"></script>
+</body>
 </html>

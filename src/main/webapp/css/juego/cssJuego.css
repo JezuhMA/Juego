@@ -17,17 +17,29 @@ body {
 }
 
 #tablero {
-    margin-left: 50%;
-    margin-top: 2%;
+    position: relative;
+    left: 50%;
     transform: translateX(-50%);
+    top: 5vh;
+    width: 90dvh;
+    height: 90dvh;
 }
 .pixel {
     position: absolute;
-    height: 1.5em;
-    width: 1.5em;
+    height: 3.333333334%;
+    width: 3.3333333334%;
     border: 1px solid rgba(145, 145, 145, 0.54);
 }
 
+[data-status="1"]{
+    background-color: #0f0;
+}
+[data-status="2"]{
+    background-color: #00ff00;
+}
+[data-status="3"] {
+    background-color: #f00;
+}
 
 #game_over {
     position: absolute;
@@ -73,11 +85,11 @@ body {
     border-radius: 10px;
 }
 #tablaPuntuaciones{
-    position: absolute;
-    top: 30%;
-    right: 5%;
+    position: relative;
+    top: 7.5vh;
+    left: 110%;
     transform: translateX(-5%);
-    font-size: 1.5em;
+    font-size: 1.15em;
     font-family: "Press Start 2P", sans-serif;
     padding: 10px;
     color: yellowgreen;
@@ -101,10 +113,11 @@ body {
 }
 
 #puntuacion {
-    position: absolute;
+    position: relative;
+    width: fit-content;
     font-size: larger;
-    top: 75px;
-    right: 9%;
+    top: 5vh;
+    left: 125%;
     text-transform: uppercase;
     font-family: Arial, Helvetica, sans-serif;
     border: 1px solid #cccccc;
@@ -116,25 +129,20 @@ body {
 
 
 #puntuacion_max {
-    position: absolute;
-    top: 25px;
-    right: 5%;
+    position: relative;
+    top: 0;
+    left: 110%;
     color: yellow;
     font-family: "Press Start 2P", cursive;
 }
 
+
 #controles {
     position: absolute;
     top: 40%;
-    left: 10%;
+    left: -65vh;
     display: flex;
     flex-direction: column;
-}
-
-#control-keys {
-    top: 200px;
-    left: 7%;
-    position: absolute;
     color: #ccccccd7;
     padding: 12px;
     font-size: 1.2em;

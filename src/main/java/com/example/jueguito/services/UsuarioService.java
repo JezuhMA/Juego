@@ -26,20 +26,12 @@ public class UsuarioService {
         Map<String, String[]> parametros = request.getParameterMap();
         if (!parametros.isEmpty()){
             usuario = new Usuario();
-            String apellidos = "";
             for (Map.Entry<String,String[]> values : parametros.entrySet()) {
                 String key = values.getKey();
                 String value = values.getValue()[0];
                 switch (key) {
                     case "nombre":
                         usuario.setNombre(value);
-                        break;
-                    case "apellido1":
-                        apellidos = apellidos.concat(value);
-                        break;
-                    case "apellido2":
-                        apellidos = apellidos.concat(" ").concat(value);
-                        usuario.setApellidos(apellidos);
                         break;
                     case "login":
                         usuario.setLogin(value);
@@ -49,16 +41,6 @@ public class UsuarioService {
                         break;
                     case "email":
                         usuario.setEmail(value);
-                        break;
-                    case "fechaNacimiento":
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                        Date fechaNacimiento = sdf.parse(value);
-                        usuario.setFechaNacimiento(fechaNacimiento);
-                        break;
-                    case "fechaRegistro":
-                        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
-                        Date fechaRegistro = sdf2.parse(value);
-                        usuario.setFechaRegistro(fechaRegistro);
                         break;
                     default:
                         break;

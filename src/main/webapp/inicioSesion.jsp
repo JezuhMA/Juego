@@ -1,41 +1,80 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Serpiente</title>
-  <link rel="stylesheet" href="css/estilosDialogs.css"/>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <title>Juego de la serpiente</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v2.1.9/css/unicons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/index/inicioYregistro.css">
 </head>
 <body>
-<div>
-    <c:if test="${mensajeBean != null}">
-        <c:if test="${mensajeBean.mensaje != null}">
-            <h1 class="${mensajeBean.estilo}">${mensajeBean.mensaje}</h1>
-        </c:if>
-    </c:if>
+<div id="stars"></div>
+<div class="section">
+    <div class="container">
+        <div class="row full-height justify-content-center">
+            <div class="col-12 text-center align-self-center py-5">
+                <div class="section pb-5 pt-5 pt-sm-2 text-center">
+                    <h6 class="mb-0 pb-3"><span>Iniciar Sesión </span><span>Registro</span></h6>
+                    <input class="checkbox" type="checkbox" id="reg-log" name="reg-log"/>
+                    <label for="reg-log"></label>
+                    <div class="card-3d-wrap mx-auto">
+                        <div class="card-3d-wrapper">
+                            <div class="card-front">
+                                <div class="center-wrap">
+                                    <div class="section text-center">
+                                        <h4 class="mb-4 pb-3">Inicio Sesion</h4>
+                                        <div class="form-group">
+                                            <input id="LoginUser" type="email" class="form-style" placeholder="Nombre de usuario">
+                                            <i class="input-icon uil uil-at"></i>
+                                        </div>
+                                        <div class="form-group mt-2">
+                                            <input id="LoginPassword" type="password" class="form-style" placeholder="Contraseña">
+                                            <i class="input-icon uil uil-lock-alt"></i>
+                                        </div>
+                                        <a id="login" class="btn mt-4">Iniciar Sesion</a>
+                                        <!--TODO hacer password recover--><p class="mb-0 mt-4 text-center"><a href="#" class="link">¿Olvidaste tu contraseña?</a></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-back">
+                                <div class="center-wrap">
+                                    <div class="section text-center">
+                                        <h4 class="mb-3 pb-3">Sign Up</h4>
+                                        <div class="form-group">
+                                            <input type="text" class="form-style" placeholder="Nombre">
+                                            <i class="input-icon uil uil-user"></i>
+                                        </div>
+                                        <div class="form-group mt-2">
+                                            <input type="email" class="form-style" placeholder="Nombre de usuario">
+                                            <i class="input-icon uil uil-at"></i>
+                                        </div>
+                                        <div class="form-group mt-2">
+                                            <input type="email" class="form-style" placeholder="Email">
+                                            <i class="input-icon uil uil-at"></i>
+                                        </div>
+                                        <div class="form-group mt-2">
+                                            <input type="password" class="form-style" placeholder="Contraseña">
+                                            <i class="input-icon uil uil-lock-alt"></i>
+                                        </div>
+                                        <div class="form-group mt-2">
+                                            <input type="password" class="form-style" placeholder="Repite contraseña">
+                                            <i class="input-icon uil uil-lock-alt"></i>
+                                        </div>
+                                        <a id="Submit" class="btn mt-4">Registro</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<!--Cuadro de Dialogo para un formulario-->
-<div class="modalDialog">
-    <form method="POST" id="inicioSesion" action="login"> <!--Para hacer login-->
-      <fieldset>
-        <legend>Iniciar Sesion</legend>
-        <!--No tiene cuenta-->
-        <p>¿Es tu primera vez? <a href="usuario/registro" id="registro" class="enlace">Registrate</a></p>
-        <label for="email">Login*</label>
-        <input type="text" id="email" name="login" placeholder="Nombre Usuario"/>
-        <label for="passWd">Contraseña*</label> <div id="mensajes"></div>
-        <input type="password" id="passWd" name="passWd" placeholder="Contraseña"/>
-        <span id="passOlvidada" class="enlace">¿Olvidaste la contraseña?</span><br>
-        <label>
-          <input type="hidden" name="status" value="OK">
-        </label>
-        <button>Iniciar Sesion</button> <!--Aceptar-->
-      </fieldset>
-    </form>
-</div>
-<script src="js/index/modal.js" ></script>
 </body>
+<script src="js/index/login.js"></script>
+<script src="js/index/registro.js"></script>
 </html>

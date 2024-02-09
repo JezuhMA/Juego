@@ -93,17 +93,15 @@ public class UsuarioDAO implements DAO<Usuario, Integer> {
     private void rellenarUser(Usuario nuevo, ResultSet rs) throws SQLException {
         nuevo.setId(rs.getInt(1));
         nuevo.setNombre(rs.getString(2));
-        nuevo.setApellidos(rs.getString(3));
-        nuevo.setFechaNacimiento(rs.getDate(4));
-        nuevo.setLogin(rs.getString(5));
-        nuevo.setPasswd(rs.getString(6));
-        nuevo.setEmail(rs.getString(7));
-        nuevo.setFechaRegistro(rs.getDate(8));
+        nuevo.setLogin(rs.getString(3));
+        nuevo.setPasswd(rs.getString(4));
+        nuevo.setEmail(rs.getString(5));
+        nuevo.setFechaRegistro(rs.getDate(6));
     }
 
     @Override
     public Integer insert(Usuario usuario) throws SQLException {
-        String consulta = "INSERT INTO USUARIO(nombre, apellidos, fecha_nacimiento, login, password, email) values (?, ?, ?, ?, ?, ?)";
+        String consulta = "INSERT INTO USUARIO(nombre, login, password, email) values (?, ?, ?, ?)";
         if (usuario.getId() != null){
             LOGGER.log(Level.SEVERE,"Error al insertar: este usuario ya existe" );
             throw new SQLException("Error al insertar: este usuario ya existe");
@@ -120,12 +118,6 @@ public class UsuarioDAO implements DAO<Usuario, Integer> {
             ptm = conn.prepareStatement(consulta, Statement.RETURN_GENERATED_KEYS);
             int index = 1;
             ptm.setString(index++ , usuario.getNombre());
-            ptm.setString(index++, usuario.getApellidos());
-            if (usuario.getFechaNacimiento() != null){
-                ptm.setDate(index++ ,  new Date(usuario.getFechaNacimiento().getTime()));
-            }else{
-                ptm.setNull(index++ , java.sql.Types.DATE);
-            }
             ptm.setString(index++ , usuario.getLogin());
             ptm.setString(index++ , usuario.getPasswd());
             ptm.setString(index , usuario.getEmail());
