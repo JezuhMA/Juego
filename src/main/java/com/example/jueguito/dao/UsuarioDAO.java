@@ -7,8 +7,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -48,7 +47,7 @@ public class UsuarioDAO implements DAO<Usuario, Integer> {
 
     @Override
     public Usuario getById(Integer id) throws SQLException {
-        String consulta = "SELECT * FROM USUARIO WHERE id = ?";
+        String consulta = "SELECT (id, nombre, login, email) FROM USUARIO WHERE id = ?";
         Usuario nuevo = null;
         Connection conn = null;
         PreparedStatement ptm = null;
@@ -94,14 +93,12 @@ public class UsuarioDAO implements DAO<Usuario, Integer> {
         nuevo.setId(rs.getInt(1));
         nuevo.setNombre(rs.getString(2));
         nuevo.setLogin(rs.getString(3));
-        nuevo.setPasswd(rs.getString(4));
-        nuevo.setEmail(rs.getString(5));
-        nuevo.setFechaRegistro(rs.getDate(6));
+        nuevo.setEmail(rs.getString(4));
     }
 
     @Override
     public Integer insert(Usuario usuario) throws SQLException {
-        String consulta = "INSERT INTO USUARIO(nombre, login, password, email) values (?, ?, ?, ?)";
+        String consulta = "INSERT INTO USUARIO(nombre, login, password, email, salt) values (?, ?, ?, ?)";
         if (usuario.getId() != null){
             LOGGER.log(Level.SEVERE,"Error al insertar: este usuario ya existe" );
             throw new SQLException("Error al insertar: este usuario ya existe");
@@ -119,8 +116,9 @@ public class UsuarioDAO implements DAO<Usuario, Integer> {
             int index = 1;
             ptm.setString(index++ , usuario.getNombre());
             ptm.setString(index++ , usuario.getLogin());
-            ptm.setString(index++ , usuario.getPasswd());
+            ptm.setString(index++ , Arrays.toString(usuario.getPasswd()));
             ptm.setString(index , usuario.getEmail());
+            ptm.setString(index , Arrays.toString(usuario.getSalt()));
             ptm.executeUpdate();
 
             rs = ptm.getGeneratedKeys();
@@ -155,7 +153,7 @@ public class UsuarioDAO implements DAO<Usuario, Integer> {
     }
 
     public Usuario getUserByLoginPass(String login, String passwd) {
-        String query = "SELECT * FROM USUARIO WHERE (login = ?, password = ?)";
+        String query = "SELECT (id, nombre, login, email) FROM USUARIO WHERE (login = ?, password = ?)";
         Usuario usuario = null;
         try (
                 Connection connection = gestorConexion.getConnection();
@@ -166,7 +164,10 @@ public class UsuarioDAO implements DAO<Usuario, Integer> {
             ResultSet rs = pst.executeQuery();
             while (rs.next()){
                 usuario = new Usuario();
-                rellenarUser(usuario, rs);
+                usuario.setId(rs.getInt(1));
+                usuario.setNombre(rs.getString(2));
+                usuario.setLogin(rs.getString(3));
+                usuario.setEmail(rs.getString(4));
             }
             try {
                 rs.close();
@@ -177,5 +178,30 @@ public class UsuarioDAO implements DAO<Usuario, Integer> {
             LOGGER.log(Level.SEVERE, "Error al recuperar usuario por login y contraseña: ".concat(e.getLocalizedMessage()), e);
         }
         return usuario;
+    }
+
+    public Map<String,byte[]> getHashSalt(String login) {
+        String query = "SELECT (password, salt) FROM USUARIO WHERE login = ?";
+        Map<String, byte[]> map = null;
+        try (
+                Connection connection = gestorConexion.getConnection();
+                PreparedStatement pst = connection.prepareStatement(query);
+                ){
+            pst.setString(1, login);
+            ResultSet rs = pst.executeQuery();
+            map = new HashMap<>();
+            while (rs.next()){
+                map.put("hash", rs.getString(1).getBytes());
+                map.put("salt", rs.getString(2).getBytes());
+            }
+            try {
+                rs.close();
+            }catch (SQLException sqlException){
+                throw new SQLException("Error al cerrar ResultSet: ".concat(sqlException.getLocalizedMessage()), sqlException);
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error al recuperar hash y salt por login: ".concat(e.getLocalizedMessage()), e);
+        }
+        return map;
     }
 }

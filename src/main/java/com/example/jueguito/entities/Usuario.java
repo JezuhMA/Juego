@@ -10,12 +10,13 @@ public class Usuario implements Serializable {
 
     private Integer id;
     private String nombre;
-    private String apellidos;
+
     private String login;
-    private String passwd;
+    private byte[] passwd;
     private String email;
-    private Date fechaNacimiento;
     private Date fechaRegistro;
+
+    private byte[] salt;
 
     public Integer getId() {
         return id;
@@ -33,13 +34,6 @@ public class Usuario implements Serializable {
         this.nombre = nombre;
     }
 
-    public String getApellidos() {
-        return apellidos;
-    }
-
-    public void setApellidos(String apellidos) {
-        this.apellidos = apellidos;
-    }
 
     public String getLogin() {
         return login;
@@ -49,11 +43,11 @@ public class Usuario implements Serializable {
         this.login = login;
     }
 
-    public String getPasswd() {
+    public byte[] getPasswd() {
         return passwd;
     }
 
-    public void setPasswd(String passwd) {
+    public void setPasswd(byte[] passwd) {
         this.passwd = passwd;
     }
 
@@ -65,13 +59,6 @@ public class Usuario implements Serializable {
         this.email = email;
     }
 
-    public Date getFechaNacimiento() {
-        return fechaNacimiento;
-    }
-
-    public void setFechaNacimiento(Date fechaNacimiento) {
-        this.fechaNacimiento = fechaNacimiento;
-    }
 
     public Date getFechaRegistro() {
         return fechaRegistro;
@@ -84,5 +71,13 @@ public class Usuario implements Serializable {
     public boolean esValido() {
         return (this.getId() != null && this.getId() > 0) &&
                 (this.getNombre() != null && !this.getNombre().isBlank());
+    }
+
+    public byte[] getSalt() {
+        return salt;
+    }
+
+    public void setSalt(byte[] salt) {
+        this.salt = salt;
     }
 }

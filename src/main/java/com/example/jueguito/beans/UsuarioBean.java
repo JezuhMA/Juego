@@ -22,11 +22,8 @@ public class UsuarioBean extends Usuario {
     public void copiar(Usuario user){
         this.setId(user.getId());
         this.setNombre(user.getNombre());
-        this.setApellidos(user.getApellidos());
         this.setLogin(user.getLogin());
-        this.setPasswd(user.getPasswd());
         this.setEmail(user.getEmail());
-        this.setFechaNacimiento(user.getFechaNacimiento());
         this.setFechaRegistro(user.getFechaRegistro());
     }
 }

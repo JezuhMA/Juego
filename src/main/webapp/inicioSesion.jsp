@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<!doctype html>
+<!-- TODO: implementar varios idiomas  -->
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <title>Juego de la serpiente</title>
@@ -27,7 +28,7 @@
                                     <div class="section text-center">
                                         <h4 class="mb-4 pb-3">Inicio Sesion</h4>
                                         <div class="form-group">
-                                            <input id="LoginUser" type="email" class="form-style" placeholder="Nombre de usuario">
+                                            <input id="LoginUser" type="email" class="form-style" placeholder="Email">
                                             <i class="input-icon uil uil-at"></i>
                                         </div>
                                         <div class="form-group mt-2">

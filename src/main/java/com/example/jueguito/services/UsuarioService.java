@@ -8,10 +8,6 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -37,7 +33,10 @@ public class UsuarioService {
                         usuario.setLogin(value);
                         break;
                     case "password":
-                        usuario.setPasswd(value);
+                        PasswordVerificationServices passwordVerificationServices = PasswordVerificationServices.getInstace();
+                        Map<String, byte[]> map = passwordVerificationServices.hashingPassword(value);
+                        usuario.setPasswd(map.get("hash"));
+                        usuario.setSalt(map.get("salt"));
                         break;
                     case "email":
                         usuario.setEmail(value);

@@ -1,13 +1,16 @@
 package com.example.jueguito.servlets;
 
 import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.example.jueguito.beans.MensajeBean;
 import com.example.jueguito.beans.UsuarioBean;
 import com.example.jueguito.entities.Usuario;
+import com.example.jueguito.services.PasswordVerificationServices;
 import com.example.jueguito.services.UsuarioService;
+import com.google.gson.Gson;
 import jakarta.inject.Inject;
-import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
@@ -26,44 +29,85 @@ public class Login extends HttpServlet {
             response.sendRedirect(getServletContext().getContextPath().concat("/inicioSesion.jsp"));
             return;
         }
+        Gson gson = new Gson();
+
+        // Leer el cuerpo de la solicitud
+        BufferedReader reader = request.getReader();
+        Map<String, String> parameter;
+        parameter = gson.fromJson(reader, Map.class);
+
+        // Obtener los parámetros de la solicitud
+        String login = (String) parameter.get("username");
+        String passwd = (String) parameter.get("password");
         Usuario usuario;
-        String status = request.getParameter("status");
-        if (status.equals("OK")) {
-            usuario = recuperarUser(request);
-            if(usuario.esValido()){
-                usuarioBean.copiar(usuario);
-                redirigirJuego(request,response);
-            }else {
-                mensajeBean.setMensajeAviso("Credenciales no validas");
-                redirigirInicio(request, response);
+        PasswordVerificationServices pwds = PasswordVerificationServices.getInstace();
+        try {
+
+            if (login == null || login.isBlank()) {
+
+                sendLoginError(request, response, "El campo login no puede estar vacio");
+                return;
             }
-        } else {
-            mensajeBean.setMensajeAviso("Error al iniciar sesion");
-            redirigirInicio(request, response);
+
+            if (passwd == null || passwd.isBlank()) {
+                sendLoginError(request, response, "El campo contraseña no puede estar vacio");
+                return;
+            }
+
+            Map<String, byte[]> map = pwds.getHashPasswordAndSalt(login);
+            byte[] hash = map.get("hash");
+            byte[] salt = map.get("salt");
+            if(pwds.verificatePassword(passwd, hash, salt)){
+                usuario = usuarioService.obtenerUsuario(login, passwd);
+                if (usuario != null) {
+                    usuarioBean.copiar(usuario);
+                    redirigirJuego(response);
+                }else {
+                    sendLoginError(request, response, "Usuario o contraseña incorrectos");
+                }
+            }
+
+        } catch (Exception e) {
+            sendLoginError(request, response, "Error al obtener los parametros");
         }
+
     }
 
-    private void redirigirInicio(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.getRequestDispatcher("/inicioSesion.jsp").forward(request, response);
+    private void sendLoginError(HttpServletRequest request, HttpServletResponse response , String error) throws  IOException {
+        Map<String, String> respuesta = new HashMap<>();
+
+        respuesta.put("status", "error");
+        respuesta.put("message", error);
+
+
+        // Convertir el objeto de respuesta a JSON
+        String jsonRespuesta = new Gson().toJson(respuesta);
+
+        // Enviar la respuesta
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(jsonRespuesta);
     }
 
-    private Usuario recuperarUser(HttpServletRequest request) {
-        String login = request.getParameter("login");
-        String passwd = request.getParameter("passWd");
-        if ( (login != null && !login.isBlank()) && (passwd != null && !passwd.isBlank()) ) {
-            return usuarioService.obtenerUsuario(login, passwd);
-        }else {
-            throw new RuntimeException("Error al obtener los parametros");
-        }
-    }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         processRequest(request,response);
     }
 
-    private void redirigirJuego(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        RequestDispatcher requestDispatcher = request.getRequestDispatcher("/juego.html");
-        requestDispatcher.forward(request, response);
+    private void redirigirJuego( HttpServletResponse response) throws IOException {
+        Map<String, String> respuesta = new HashMap<>();
+
+        respuesta.put("status", "OK");
+        respuesta.put("message", "Usuario logeado correctamente");
+
+
+        // Convertir el objeto de respuesta a JSON
+        String jsonRespuesta = new Gson().toJson(respuesta);
+
+        // Enviar la respuesta
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(jsonRespuesta);
     }
 
     @Override
