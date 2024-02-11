@@ -6,8 +6,11 @@ async function login() {
     const url = "/jueguito_war/login";
     const data = {
         username: username,
-        password: password
+        password: password,
     };
+    if (username === "" || password === "") {
+        return Promise.reject({message: "Por favor, rellene todos los campos"});
+    }
     const response = await fetch(url, {
         method: "POST",
         headers: {
@@ -16,9 +19,13 @@ async function login() {
         body: JSON.stringify(data)
     });
     const json = await response.json();
+
     if (response.status === 200) {
         if (json.status === "OK") {
-            location.href = "/jueguito_war/juego.html";
+            if (Object.hasOwnProperty.call(json, "token")) {
+                localStorage.setItem("token", json.token);
+            }
+            location.href = json.url;
         } else {
             return Promise.reject(json);
         }

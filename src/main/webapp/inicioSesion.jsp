@@ -28,8 +28,8 @@
                                     <div class="section text-center">
                                         <h4 class="mb-4 pb-3">Inicio Sesion</h4>
                                         <div class="form-group">
-                                            <input id="LoginUser" type="email" class="form-style" placeholder="Email">
-                                            <i class="input-icon uil uil-at"></i>
+                                            <input id="LoginUser" type="text" class="form-style" placeholder="Nombre Usuario">
+                                            <i class="input-icon uil uil-user"></i>
                                         </div>
                                         <div class="form-group mt-2">
                                             <input id="LoginPassword" type="password" class="form-style" placeholder="Contraseña">
@@ -45,23 +45,23 @@
                                     <div class="section text-center">
                                         <h4 class="mb-3 pb-3">Sign Up</h4>
                                         <div class="form-group">
-                                            <input type="text" class="form-style" placeholder="Nombre">
+                                            <input type="text" class="form-style" id="RegistroNombre" placeholder="Nombre">
                                             <i class="input-icon uil uil-user"></i>
                                         </div>
                                         <div class="form-group mt-2">
-                                            <input type="email" class="form-style" placeholder="Nombre de usuario">
+                                            <input type="email" class="form-style" id="RegistroUser" placeholder="Nombre de usuario">
+                                            <i class="input-icon uil uil-user"></i>
+                                        </div>
+                                        <div class="form-group mt-2">
+                                            <input type="email" class="form-style" id="RegistroEmail" placeholder="Email">
                                             <i class="input-icon uil uil-at"></i>
                                         </div>
                                         <div class="form-group mt-2">
-                                            <input type="email" class="form-style" placeholder="Email">
-                                            <i class="input-icon uil uil-at"></i>
-                                        </div>
-                                        <div class="form-group mt-2">
-                                            <input type="password" class="form-style" placeholder="Contraseña">
+                                            <input type="password" class="form-style" id="RegistroPassword" placeholder="Contraseña">
                                             <i class="input-icon uil uil-lock-alt"></i>
                                         </div>
                                         <div class="form-group mt-2">
-                                            <input type="password" class="form-style" placeholder="Repite contraseña">
+                                            <input type="password" class="form-style" id="PassCoindide" placeholder="Repite contraseña">
                                             <i class="input-icon uil uil-lock-alt"></i>
                                         </div>
                                         <a id="Submit" class="btn mt-4">Registro</a>
