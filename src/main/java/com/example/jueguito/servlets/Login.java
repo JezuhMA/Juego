@@ -103,6 +103,7 @@ public class Login extends HttpServlet {
 
         // Enviar la respuesta
         response.setContentType("application/json");
+
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write(jsonRespuesta);
     }

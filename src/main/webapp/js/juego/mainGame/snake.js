@@ -1,46 +1,74 @@
-export default function Snake(posiciones) {
-
-    function posicionar(posX, posY) {
-        const posicionamiento = { x: posiciones[0], y: posiciones[1] };
-        if (posX !== undefined) posicionamiento.x += posX;
-        if (posY !== undefined) posicionamiento.y += posY;
-        return posicionamiento;
-    }
-    let cabeza = { img: "imagenes/serpiente/", posicion: posicionar() };
-    let abdomen = { img: "imagenes/serpiente/", posicion: posicionar(undefined, -1) };
-
-    //TODO: Hacer el cuerpo dinamico y cambiar la posicion de origen segun el tablero
+export function Snake(){
     return {
-        cabeza: cabeza,
-        abdomen: abdomen,
-        cuerpo: [cabeza, abdomen],
-
-        moverSnake: function (movX, movY) {
-            // Crear una copia del último segmento de la serpiente
-            let nuevoSegmento = Object.assign({}, this.cuerpo[this.cuerpo.length - 1]);
-
-            // Mover cada segmento de la serpiente a la posición del segmento anterior
-            this.moverSegmentos();
-
-            this.cuerpo[0].posicion.x += movX;
-            // Mover la cabeza de la serpiente
-            this.cuerpo[0].posicion.y += movY;
-            //TODO: comprobar que no se agrergue un nuevo segmento para el tema de identificar la serpiente con la antiguaposicion
-            return { nuevaPosicion: this.cuerpo[0].posicion, antiguaPosicion: nuevoSegmento.posicion };
+        //VARIABLE
+        cuerpo: [],
+        //CONSTANTE
+        partes: {
+            CABEZA_SERPIENTE : 1,
+            CUERPO : 2,
         },
 
-        moverSegmentos: function () {
-            for (let i = this.cuerpo.length - 1; i > 0; i--) {
-                this.cuerpo[i].posicion = Object.assign({}, this.cuerpo[i - 1].posicion);
+        cons: function(cabeza, posInX, posInY){
+            this.cuerpo = [this.crearSegmento(cabeza, posInX, posInY)];
+        },
+
+        crearSegmento: function (nuevaParte, nPosX, nPosY){
+          return {
+              parte: this.partes[nuevaParte],
+              posX: nPosX,
+              posY: nPosY,
+          }
+        },
+
+        addSegmento: function (objSegmento) {
+            this.getCuerpo().push(objSegmento);
+        },
+
+        moverSerpiente: function (nuevaPos) {
+            const cabeza = this.getCabeza();
+            const cuerpoSerpiente = this.getCuerpo();
+
+            for (let i = cuerpoSerpiente.length - 1; i > 0; i--) {
+                cuerpoSerpiente[i].posX = cuerpoSerpiente[i - 1].posX;
+                cuerpoSerpiente[i].posY = cuerpoSerpiente[i - 1].posY;
             }
+            cabeza.posX += nuevaPos.x;
+            cabeza.posY += nuevaPos.y;
+        },
+        /*
+            Devuelve verdadero si choca con los bordes del tablero
+         */
+        chocaBorde: function (direccion, TABLERO_X) {
+            const nuevaPos = structuredClone(this.getCabeza());
+            nuevaPos.posX += direccion.x;
+            nuevaPos.posY += direccion.y;
+            return nuevaPos.posX < 0 ||
+                nuevaPos.posX >= TABLERO_X ||
+                nuevaPos.posY < 0 ||
+                nuevaPos.posY >= TABLERO_X
         },
 
-        //limitarSnake devolverá true si alguna parte de la serpiente está fuera del tablero, y false si toda la serpiente está dentro del tablero.
-        limitarSnake: function (movX, movY) {
-            const segmento = this.cuerpo[0];
-            return (segmento.posicion.x + movX < 0 || segmento.posicion.x + movX > posiciones[0]*2 - 1 ||
-                segmento.posicion.y + movY < 0 || segmento.posicion.y + movY > posiciones[0]*2 - 1);
-        }
+        chocaObj: function (direccion, obj) {
+            const nuevaPos = structuredClone(this.getCabeza());
+            nuevaPos.posX += direccion.x;
+            nuevaPos.posY += direccion.y;
+            return nuevaPos.posX === obj.posX &&
+                nuevaPos.posY === obj.posY
+        },
 
+        seCome: function (direccion) {
+            const nuevaPos = structuredClone(this.getCabeza());
+            nuevaPos.posX += direccion.x;
+            nuevaPos.posY += direccion.y;
+            return this.getCuerpo().some(trozo => trozo.posX === nuevaPos.posX && trozo.posY === nuevaPos.posY);
+        },
+
+        getCabeza: function () {
+            return this.cuerpo[0];
+        },
+
+        getCuerpo: function () {
+            return this.cuerpo;
+        },
     }
 }

@@ -1,3 +1,5 @@
+import {Snake} from "./snake.js";
+
 window.onload = () => {
     /**
      * Declaraciones de constantes y variables.
@@ -29,8 +31,8 @@ window.onload = () => {
     const pixeles = [];
 
     const FONDO = 0;
-    const CABEZA_SERPIENTE = 1;
-    const CUERPO = 2;
+    const CABEZA_SERPIENTE = "CABEZA_SERPIENTE";
+    const CUERPO = "CUERPO";
     const MANZANA = 3;
     const DIRECCION = {
         ArrowLeft: { x: -1, y: 0 },
@@ -52,6 +54,8 @@ window.onload = () => {
 
     const cuerpoSerpiente = [];
     const manzana = newSegmento(MANZANA);
+    //AQUI SE CREA UNA SERPIENTE
+    const SNAKE = new Snake();
     const POSX_INICIAL_SERPIENTE = 15;
     const POSY_INICIAL_SERPIENTE = 15;
 
@@ -75,7 +79,7 @@ window.onload = () => {
      * Aplica estilos a un elemento píxel basado en los parámetros proporcionados.
      *
      * @param {HTMLElement} pixel - El elemento píxel al que se le aplicarán los estilos.
-     * @param {string} estado - El estado del píxel.
+     * @param {number} estado - El estado del píxel.
      * @param {number} x - La coordenada x del píxel.
      * @param {number} y - La coordenada y del píxel.
      */
@@ -125,16 +129,11 @@ window.onload = () => {
      * @name initSerpiente
      * @returns {Object} Un objeto que contiene la cabeza y el cuello de la serpiente.
      */
-    function initSerpiente() {
-        const cabeza = newSegmento(
-            CABEZA_SERPIENTE,
-            POSX_INICIAL_SERPIENTE,
-            POSY_INICIAL_SERPIENTE
-        );
 
+    //TODO hacer con el snake.js
+    function initSerpiente(cabeza, posx, posy) {
+        SNAKE.cons(cabeza, posx, posy);
         cuerpoSerpiente.push(cabeza);
-
-        return { cabeza};
     }
 
     /**
@@ -148,7 +147,7 @@ window.onload = () => {
     function definirPixelStatus(x, y, cabeza, manzana) {
         let estado = FONDO;
         if (x === cabeza.posX && y === cabeza.posY) {
-            estado = CABEZA_SERPIENTE;
+            estado = cabeza.parte;
         }
         else if (x === manzana.posX && y === manzana.posY) {
             estado = MANZANA;
@@ -159,12 +158,12 @@ window.onload = () => {
     /**
      * Genera el tablero del juego con los elementos proporcionados.
      *
-     * @param {number} cabeza - Coordenada de la cabeza de la serpiente.
      * @param {number} manzana - Coordenada de la manzana.
      */
-    function generarTablero(cabeza, manzana) {
+    function generarTablero(manzana) {
         const tablero = document.querySelector("#tablero");
         const frag = document.createDocumentFragment();
+        const cabeza = SNAKE.getCabeza();
         for (let x = 0; x < TABLERO_X; x++) {
             tableroArr[x] = [];
             for (let y = 0; y < TABLERO_X; y++) {
@@ -203,9 +202,9 @@ window.onload = () => {
      * Inicia el juego.
      */
     function inicio() {
-        const { cabeza} = initSerpiente();
+        initSerpiente(CABEZA_SERPIENTE, POSX_INICIAL_SERPIENTE, POSY_INICIAL_SERPIENTE);
         generarPosicionesManzana(manzana);
-        generarTablero(cabeza, manzana);
+        generarTablero(manzana);
         initTablaPuntuacion();
         actualizarPuntuacion();
     }
@@ -219,8 +218,8 @@ window.onload = () => {
                 tableroArr[x][y] = FONDO;
             }
         }
-        cuerpoSerpiente.forEach((segmento) => {
-            tableroArr[segmento.posX][segmento.posY] = segmento.estado;
+        SNAKE.getCuerpo().forEach((segmento) => {
+            tableroArr[segmento.posX][segmento.posY] = segmento.parte;
         });
         tableroArr[manzana.posX][manzana.posY] = manzana.estado;
     }
@@ -250,7 +249,7 @@ window.onload = () => {
             x = Math.floor(Math.random() * TABLERO_X);
             y = Math.floor(Math.random() * TABLERO_X);
         } while (
-            !cuerpoSerpiente.every(
+            !SNAKE.getCuerpo().every(
                 (segmento) => x !== segmento.posX && y !== segmento.posY
             )
             );
@@ -259,22 +258,9 @@ window.onload = () => {
     }
 
     /**
-     * Actualiza el estado de la serpiente.
-     */
-    function actualizarSerpiente() {
-        for (let i = 0; i < cuerpoSerpiente.length; i++) {
-            if (i !== 0 && i !== 1) {
-                cuerpoSerpiente[i].estado = CUERPO;
-            } else if (i === 1) {
-                cuerpoSerpiente[i].estado = CUERPO;
-            }
-        }
-    }
-    /**
      * Maneja las colisiones en el juego.
      *
-     * @param {Object} cabeza - La cabeza de la serpiente.
-     * @param {Object} nuevaPos - La nueva posición a la que se mueve la serpiente.
+     * @param {Object} nuevaDir - La nueva posición a la que se mueve la serpiente.
      * @returns {boolean} - Devuelve false si ocurre una colisión, true en caso contrario.
      *
      * La función comienza verificando si la nueva posición está fuera del tablero de juego. Si lo está, la función devuelve `false`, indicando una colisión con los límites del tablero de juego.
@@ -285,41 +271,21 @@ window.onload = () => {
      * Si `colisiones` es igual a `FONDO`, mueve cada segmento del cuerpo de la serpiente a la posición del segmento que está delante de él y mueve la cabeza de la serpiente a la nueva posición.
      * Finalmente, actualiza los recursos del juego utilizando la función `actualizarRecursos` y devuelve `true`, indicando que no hay colisión.
      */
-    function manejarColisiones(cabeza, nuevaPos) {
-        if (
-            nuevaPos.x < 0 ||
-            nuevaPos.x >= TABLERO_X ||
-            nuevaPos.y < 0 ||
-            nuevaPos.y >= TABLERO_X
-        ) {
+    function manejarColisiones(nuevaDir) {
+        if (SNAKE.chocaBorde(nuevaDir, TABLERO_X)) {
             return false;
         }
-        let colisiones = tableroArr[nuevaPos.x][nuevaPos.y];
-        if (colisiones !== FONDO) {
-            if (colisiones === MANZANA) {
-                // Veo si se come una manzana aqui crece
-                const segmento = newSegmento(CABEZA_SERPIENTE, nuevaPos.x, nuevaPos.y);
-                cuerpoSerpiente.unshift(segmento); //Añado al principio del array
-                actualizarSerpiente();
-                puntuacion++;
-                actualizarPuntuacion();
-                generarPosicionesManzana(manzana);
-            } else if (colisiones === CUERPO) {
-                //veo que no se coma a si misma
-                return false;
-            }
-        } else {
-            // Aqui avanza normal
-            for (let i = cuerpoSerpiente.length - 1; i > 0; i--) {
-                cuerpoSerpiente[i].posX = cuerpoSerpiente[i - 1].posX;
-                cuerpoSerpiente[i].posY = cuerpoSerpiente[i - 1].posY;
-            }
-            cabeza.posX = nuevaPos.x;
-            cabeza.posY = nuevaPos.y;
-        }
 
-        actualizarRecursos();
-        return true;
+        if (SNAKE.chocaObj(nuevaDir, manzana)) {
+            // Veo si se come una manzana aqui crece
+            const nuevoSeg = SNAKE.crearSegmento(CUERPO, 0, 0);
+            SNAKE.addSegmento(nuevoSeg);
+            puntuacion++;
+            actualizarPuntuacion();
+            generarPosicionesManzana(manzana);
+            return true;
+        }
+        return !SNAKE.seCome(nuevaDir);
     }
     /**
      * Actualiza los recursos del juego.
@@ -346,7 +312,6 @@ window.onload = () => {
         form.addEventListener("submit", (event) => {
             event.preventDefault();
             const nombre = form.nombre.value;
-            console.log(nombre);
             guardarDatosUsuario(nombre, puntuacion);
             dialog.close();
             window.location.reload();
@@ -406,9 +371,7 @@ window.onload = () => {
     /**
      * Calcula una nueva posición basada en la posición actual y una dirección.
      *
-     * @param {Object} cabeza - La posición actual, con las propiedades posX y posY.
      * @param {number} codigo - El código de dirección. Si no se proporciona, se utiliza el código de dirección actual.
-     * @param {number} codigoDireccionActual - El código de dirección actual.
      * @returns {Object} nuevaPos - La nueva posición después de moverse en la dirección especificada.
      *
      * La función comienza creando un objeto `nuevaPos` con las propiedades `x` e `y` que se establecen inicialmente en la posición actual de la "cabeza" (`cabeza.posX`, `cabeza.posY`).
@@ -417,22 +380,12 @@ window.onload = () => {
      * Si `validarDireccion` devuelve una dirección válida (`direccionNueva`), el código actualiza `nuevaPos.x` y `nuevaPos.y` sumando los valores `x` e `y` de `direccionNueva` a ellos. Esto mueve efectivamente la posición en la dirección especificada por `direccionNueva`.
      * Finalmente, se devuelve el objeto `nuevaPos` actualizado. Este objeto representa la nueva posición después del movimiento en la dirección especificada.
      */
-    function getNuevaPosicion(codigo, cabeza) {
-        let nuevaPos = {
-            x: cabeza.posX,
-            y: cabeza.posY,
-        };
-
+    function getNuevaPosicion(codigo) {
         if (!codigo && codigoDireccionActual) {
             codigo = codigoDireccionActual;
         }
 
-        const direccionNueva = validarDireccion(codigo, codigoDireccionActual);
-        if (direccionNueva) {
-            nuevaPos.x += direccionNueva.x;
-            nuevaPos.y += direccionNueva.y;
-        }
-        return nuevaPos;
+        return validarDireccion(codigo, codigoDireccionActual);
     }
     /**
      * Valida una nueva dirección en comparación con la dirección actual.
@@ -471,7 +424,7 @@ window.onload = () => {
 
     /**
      * Comprueba si la tecla presionada es una tecla válida para el juego.
-     * @param {Event} event - El evento de teclado.
+     * @param {Object} event - El evento de teclado.
      * @returns {boolean} - Devuelve true si la tecla es válida, de lo contrario devuelve false.
      */
     function comprobarKey(event) {
@@ -505,20 +458,18 @@ window.onload = () => {
                 quitarPlay();
             }
             if (event.code !== null) {
+
                 if (event.preventDefault) {
                     event.preventDefault();
                 }
-                let cabezaSerpiente = cuerpoSerpiente[0];
 
-                const nuevaPos = getNuevaPosicion(codigo, cabezaSerpiente);
+                const nuevaPos = getNuevaPosicion(codigo);
 
-                if (
-                    nuevaPos.x !== cabezaSerpiente.posX ||
-                    nuevaPos.y !== cabezaSerpiente.posY
-                ) {
-                    if (!manejarColisiones(cabezaSerpiente, nuevaPos)) {
-                        juegoTerminado = true;
-                    }
+                if (!manejarColisiones(nuevaPos)) {
+                    juegoTerminado = true;
+                }else{
+                    SNAKE.moverSerpiente(nuevaPos);
+                    actualizarRecursos();
                 }
             }
         }
