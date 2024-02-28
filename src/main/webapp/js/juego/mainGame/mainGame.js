@@ -52,7 +52,6 @@ window.onload = () => {
     const FPS = 10; // Los FPS que deseas
     const intervalo = 1000 / FPS; // Intervalo de tiempo en ms
 
-    const cuerpoSerpiente = [];
     const manzana = newSegmento(MANZANA);
     //AQUI SE CREA UNA SERPIENTE
     const SNAKE = new Snake();
@@ -129,11 +128,8 @@ window.onload = () => {
      * @name initSerpiente
      * @returns {Object} Un objeto que contiene la cabeza y el cuello de la serpiente.
      */
-
-    //TODO hacer con el snake.js
     function initSerpiente(cabeza, posx, posy) {
         SNAKE.cons(cabeza, posx, posy);
-        cuerpoSerpiente.push(cabeza);
     }
 
     /**
@@ -158,7 +154,7 @@ window.onload = () => {
     /**
      * Genera el tablero del juego con los elementos proporcionados.
      *
-     * @param {number} manzana - Coordenada de la manzana.
+     * @param {{posX: number, posY: number, estado: *}} manzana - Coordenada de la manzana.
      */
     function generarTablero(manzana) {
         const tablero = document.querySelector("#tablero");
@@ -369,53 +365,6 @@ window.onload = () => {
     }
 
     /**
-     * Calcula una nueva posición basada en la posición actual y una dirección.
-     *
-     * @param {number} codigo - El código de dirección. Si no se proporciona, se utiliza el código de dirección actual.
-     * @returns {Object} nuevaPos - La nueva posición después de moverse en la dirección especificada.
-     *
-     * La función comienza creando un objeto `nuevaPos` con las propiedades `x` e `y` que se establecen inicialmente en la posición actual de la "cabeza" (`cabeza.posX`, `cabeza.posY`).
-     * A continuación, verifica si no se proporciona un código de dirección (`codigo`) y si existe un código de dirección actual (`codigoDireccionActual`). Si este es el caso, establece `codigo` en el valor de `codigoDireccionActual`. Esto significa que si no se proporciona una nueva dirección, se utilizará la dirección actual.
-     * Luego, llama a la función `validarDireccion` con `codigo` y `codigoDireccionActual` como argumentos. Esta función se encarga de validar la nueva dirección y devolverla. Si la nueva dirección es opuesta a la actual, la función devuelve la dirección actual en su lugar (evitando un movimiento en dirección opuesta). Si se proporciona una nueva dirección válida, actualiza la dirección actual con la nueva.
-     * Si `validarDireccion` devuelve una dirección válida (`direccionNueva`), el código actualiza `nuevaPos.x` y `nuevaPos.y` sumando los valores `x` e `y` de `direccionNueva` a ellos. Esto mueve efectivamente la posición en la dirección especificada por `direccionNueva`.
-     * Finalmente, se devuelve el objeto `nuevaPos` actualizado. Este objeto representa la nueva posición después del movimiento en la dirección especificada.
-     */
-    function getNuevaPosicion(codigo) {
-        if (!codigo && codigoDireccionActual) {
-            codigo = codigoDireccionActual;
-        }
-
-        return validarDireccion(codigo, codigoDireccionActual);
-    }
-    /**
-     * Valida una nueva dirección en comparación con la dirección actual.
-     *
-     * @param {number} codigo - El código de la nueva dirección.
-     * @param {number} codDireccionActual - El código de la dirección actual.
-     * @returns {Object} - La nueva dirección después de la validación.
-     *
-     * La función comienza obteniendo la nueva dirección (`nuevaDireccion`) de `DIRECCION` utilizando el código de dirección proporcionado (`codigo`).
-     * A continuación, verifica si tanto `nuevaDireccion` como `codDireccionActual` son verdaderos. Si lo son, obtiene la dirección actual (`direccionActualCodigo`) de `DIRECCION` utilizando el código de dirección actual (`codDireccionActual`).
-     * Luego, verifica si los valores `x` e `y` de `direccionActualCodigo` son los negativos de los valores `x` e `y` de `nuevaDireccion`, respectivamente. Si lo son, significa que la nueva dirección es opuesta a la dirección actual. En este caso, la función devuelve `direccionActualCodigo`, evitando efectivamente un movimiento en dirección opuesta.
-     * Si la nueva dirección no es opuesta a la dirección actual, la función verifica si `codigo` es verdadero. Si lo es, actualiza `codigoDireccionActual` con `codigo`, actualizando así la dirección actual con la nueva dirección.
-     * Finalmente, la función devuelve `nuevaDireccion`, que es la nueva dirección después de la validación. Si la nueva dirección era opuesta a la dirección actual, `nuevaDireccion` sería igual a la dirección actual. De lo contrario, sería la dirección especificada por `codigo`.
-     */
-    function validarDireccion(codigo, codDireccionActual) {
-        const nuevaDireccion = DIRECCION[codigo];
-        if (nuevaDireccion && codDireccionActual) {
-            const direccionActualCodigo = DIRECCION[codDireccionActual];
-            if (
-                direccionActualCodigo.x === -nuevaDireccion.x &&
-                direccionActualCodigo.y === -nuevaDireccion.y
-            ) {
-                return direccionActualCodigo; //Aqui no se puede ir en la direccion contraria
-            }
-        }
-        if (codigo) codigoDireccionActual = codigo; //Aqui actualizo la direccion
-        return nuevaDireccion;
-    }
-
-    /**
      * Oculta el elemento con el id "play".
      */
     function quitarPlay() {
@@ -457,13 +406,18 @@ window.onload = () => {
             if (puntuacion === 0) {
                 quitarPlay();
             }
-            if (event.code !== null) {
+            if (codigo !== null) {
 
                 if (event.preventDefault) {
                     event.preventDefault();
                 }
 
-                const nuevaPos = getNuevaPosicion(codigo);
+                if (!codigoDireccionActual) codigoDireccionActual = codigo;
+
+                const nuevaPos = SNAKE.mantieneDir(DIRECCION[codigoDireccionActual], DIRECCION[codigo]) ?
+                    DIRECCION[codigoDireccionActual] : DIRECCION[codigo];
+
+                codigoDireccionActual = codigo;
 
                 if (!manejarColisiones(nuevaPos)) {
                     juegoTerminado = true;

@@ -63,6 +63,11 @@ export function Snake(){
             return this.getCuerpo().some(trozo => trozo.posX === nuevaPos.posX && trozo.posY === nuevaPos.posY);
         },
 
+        mantieneDir: function (direccionActual, nuevaDireccion){
+            return direccionActual.x === -nuevaDireccion.x &&
+            direccionActual.y === -nuevaDireccion.y
+        },
+
         getCabeza: function () {
             return this.cuerpo[0];
         },
