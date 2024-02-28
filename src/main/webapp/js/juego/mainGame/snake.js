@@ -1,27 +1,23 @@
-export function Snake(){
+const partes =  {
+        cabeza : 1,
+        cuerpo : 2,
+    }
+
+export function Snake(cuerpoInit, posX, posY){
     return {
         //VARIABLE
-        cuerpo: [],
-        //CONSTANTE
-        partes: {
-            CABEZA_SERPIENTE : 1,
-            CUERPO : 2,
-        },
+        cuerpo: [{
+            parte: partes[cuerpoInit],
+            posX: posX,
+            posY: posY,
+        }],
 
-        cons: function(cabeza, posInX, posInY){
-            this.cuerpo = [this.crearSegmento(cabeza, posInX, posInY)];
-        },
-
-        crearSegmento: function (nuevaParte, nPosX, nPosY){
-          return {
-              parte: this.partes[nuevaParte],
-              posX: nPosX,
-              posY: nPosY,
-          }
-        },
-
-        addSegmento: function (objSegmento) {
-            this.getCuerpo().push(objSegmento);
+        crearSegmento: function (nuevaParte){
+           this.getCuerpo().push({
+              parte: partes[nuevaParte],
+              posX: 0,
+              posY: 0,
+          });
         },
 
         moverSerpiente: function (nuevaPos) {

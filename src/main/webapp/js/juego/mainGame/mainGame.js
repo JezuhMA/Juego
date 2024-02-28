@@ -1,4 +1,6 @@
 import {Snake} from "./snake.js";
+import {PowerUp} from "./powerups.js";
+import {PuntuacionUsuario} from "./puntuacionUsuario.js"
 
 window.onload = () => {
     /**
@@ -11,7 +13,7 @@ window.onload = () => {
      * @const {number} FONDO - Representa el estado de fondo de una celda en el tablero de juego.
      * @const {number} CABEZA_SERPIENTE - Representa el estado de la cabeza de la serpiente en una celda del tablero de juego.
      * @const {number} CUERPO - Representa el estado del cuerpo de la serpiente en una celda del tablero de juego.
-     * @const {number} MANZANA - Representa el estado de una manzana en una celda del tablero de juego.
+     * @const {number} MANZANA - Representa el estado de una powerUp en una celda del tablero de juego.
      * @const {Object} DIRECCION - Mapea los códigos de tecla a vectores de dirección.
      * @let {string} codigoDireccionActual - Almacenará el código de dirección actual.
      * @let {number} puntuacion - Almacena la puntuación actual, inicializada en 0.
@@ -20,7 +22,7 @@ window.onload = () => {
      * @const {number} FPS - Define los fotogramas por segundo deseados.
      * @const {number} intervalo - Define el intervalo entre fotogramas en milisegundos.
      * @let {Array} cuerpoSerpiente - Almacenará los segmentos del cuerpo de la serpiente.
-     * @let {Object} manzana - Un segmento que representa una manzana.
+     * @let {Object} powerUp - Un segmento que representa una powerUp.
      * @const {number} POSX_INICIAL_SERPIENTE - Define la posición inicial en x de la serpiente.
      * @const {number} POSY_INICIAL_SERPIENTE - Define la posición inicial en y de la serpiente.
      */
@@ -31,9 +33,10 @@ window.onload = () => {
     const pixeles = [];
 
     const FONDO = 0;
-    const CABEZA_SERPIENTE = "CABEZA_SERPIENTE";
-    const CUERPO = "CUERPO";
-    const MANZANA = 3;
+    const CABEZA_SERPIENTE = "cabeza";
+    const CUERPO = "cuerpo";
+    const MANZANA = "manzana";
+
     const DIRECCION = {
         ArrowLeft: { x: -1, y: 0 },
         ArrowRight: { x: 1, y: 0 },
@@ -52,27 +55,12 @@ window.onload = () => {
     const FPS = 10; // Los FPS que deseas
     const intervalo = 1000 / FPS; // Intervalo de tiempo en ms
 
-    const manzana = newSegmento(MANZANA);
+    let powerUp;
     //AQUI SE CREA UNA SERPIENTE
-    const SNAKE = new Snake();
     const POSX_INICIAL_SERPIENTE = 15;
     const POSY_INICIAL_SERPIENTE = 15;
-
-    /**
-     * Crea un nuevo objeto de segmento con el estado y las posiciones proporcionadas.
-     *
-     * @param {any} estado - El estado del nuevo segmento.
-     * @param {number} positionX - La coordenada x del nuevo segmento.
-     * @param {number} positionY - La coordenada y del nuevo segmento.
-     * @returns {Object} Un nuevo objeto de segmento con el estado y las posiciones proporcionadas.
-     */
-    function newSegmento(estado, positionX, positionY) {
-        return {
-            estado: estado,
-            posX: positionX,
-            posY: positionY,
-        };
-    }
+    const SNAKE = new Snake(CABEZA_SERPIENTE, POSX_INICIAL_SERPIENTE, POSY_INICIAL_SERPIENTE);
+    const almacenamiento = new PuntuacionUsuario();
 
     /**
      * Aplica estilos a un elemento píxel basado en los parámetros proporcionados.
@@ -108,7 +96,8 @@ window.onload = () => {
      * @function
      * @name actualizarPuntuacion
      */
-    function actualizarPuntuacion() {
+    function actualizarPuntuacion(puntos) {
+        puntuacion += puntos;
         document.querySelector(
             "#puntuacion"
         ).textContent = `Puntuacion: ${puntuacion}`;
@@ -121,50 +110,36 @@ window.onload = () => {
             )}`;
         }
     }
-    /**
-     * Inicializa una serpiente para un juego de serpientes. Crea dos segmentos de la serpiente, la cabeza y el cuello, y los añade al array `cuerpoSerpiente`, que representa el cuerpo de la serpiente.
-     *
-     * @function
-     * @name initSerpiente
-     * @returns {Object} Un objeto que contiene la cabeza y el cuello de la serpiente.
-     */
-    function initSerpiente(cabeza, posx, posy) {
-        SNAKE.cons(cabeza, posx, posy);
-    }
 
     /**
-     * Define el estado de un píxel basado en sus coordenadas y las posiciones de la cabeza, el cuello y la manzana.
+     * Define el estado de un píxel basado en sus coordenadas y las posiciones de la cabeza, el cuello y la powerUp.
      * @param {number} x - La coordenada x del píxel.
      * @param {number} y - La coordenada y del píxel.
-     * @param {object} cabeza - El objeto que representa la cabeza de la serpiente.
-     * @param {object} manzana - El objeto que representa la manzana.
      * @returns {number} El estado del píxel.
      */
-    function definirPixelStatus(x, y, cabeza, manzana) {
+    function definirPixelStatus(x, y) {
         let estado = FONDO;
+        const cabeza = SNAKE.getCabeza();
         if (x === cabeza.posX && y === cabeza.posY) {
             estado = cabeza.parte;
         }
-        else if (x === manzana.posX && y === manzana.posY) {
-            estado = MANZANA;
+        else if (x === powerUp.getPosX() && y === powerUp.getPosY()) {
+            estado = powerUp.getParte();
         }
         return estado;
     }
 
     /**
      * Genera el tablero del juego con los elementos proporcionados.
-     *
-     * @param {{posX: number, posY: number, estado: *}} manzana - Coordenada de la manzana.
      */
-    function generarTablero(manzana) {
+    function generarTablero() {
         const tablero = document.querySelector("#tablero");
         const frag = document.createDocumentFragment();
-        const cabeza = SNAKE.getCabeza();
         for (let x = 0; x < TABLERO_X; x++) {
             tableroArr[x] = [];
             for (let y = 0; y < TABLERO_X; y++) {
                 const pixel = document.createElement("div");
-                const estado = definirPixelStatus(x, y, cabeza, manzana);
+                const estado = definirPixelStatus(x, y);
                 tableroArr[x][y] = estado;
                 pixeles.push(pixel);
                 darEstiloPixel(pixel, estado, x, y);
@@ -198,15 +173,14 @@ window.onload = () => {
      * Inicia el juego.
      */
     function inicio() {
-        initSerpiente(CABEZA_SERPIENTE, POSX_INICIAL_SERPIENTE, POSY_INICIAL_SERPIENTE);
-        generarPosicionesManzana(manzana);
-        generarTablero(manzana);
+        nuevoPWUps(MANZANA);
+        generarTablero();
         initTablaPuntuacion();
-        actualizarPuntuacion();
+        actualizarPuntuacion(0);
     }
     /**
      * Actualiza el array de juego con los valores correspondientes
-     * de los estados de la serpiente y la manzana.
+     * de los estados de la serpiente y la powerUp.
      */
     function actualizarArrayJuego() {
         for (let x = 0; x < TABLERO_X; x++) {
@@ -217,7 +191,7 @@ window.onload = () => {
         SNAKE.getCuerpo().forEach((segmento) => {
             tableroArr[segmento.posX][segmento.posY] = segmento.parte;
         });
-        tableroArr[manzana.posX][manzana.posY] = manzana.estado;
+        tableroArr[powerUp.getPosX()][powerUp.getPosY()] = powerUp.getParte();
     }
 
     /**
@@ -236,21 +210,23 @@ window.onload = () => {
     }
 
     /**
-     * Genera las posiciones de una manzana en el tablero de juego.
-     * @param {Object} manzana - El objeto de la manzana.
+     * Genera las posiciones de una powerUp en el tablero de juego.
+     * @param {Object} tipo - El powerUp.
      */
-    function generarPosicionesManzana(manzana) {
-        let x, y;
+    function nuevoPWUps(tipo) {
+        const pos = {
+            x:  undefined,
+            y: undefined,
+        };
         do {
-            x = Math.floor(Math.random() * TABLERO_X);
-            y = Math.floor(Math.random() * TABLERO_X);
+            pos.x = Math.floor(Math.random() * TABLERO_X);
+            pos.y = Math.floor(Math.random() * TABLERO_X);
         } while (
             !SNAKE.getCuerpo().every(
-                (segmento) => x !== segmento.posX && y !== segmento.posY
+                (segmento) => pos.x !== segmento.posX && pos.y !== segmento.posY
             )
             );
-        manzana.posY = y;
-        manzana.posX = x;
+        powerUp = new PowerUp(tipo, pos.x, pos.y);
     }
 
     /**
@@ -262,7 +238,7 @@ window.onload = () => {
      * La función comienza verificando si la nueva posición está fuera del tablero de juego. Si lo está, la función devuelve `false`, indicando una colisión con los límites del tablero de juego.
      * A continuación, obtiene el valor en la nueva posición en el array `tableroArr`, que probablemente representa el tablero de juego. Este valor se asigna a la variable `colisiones`.
      * Luego, verifica si `colisiones` no es igual a `FONDO`, lo cual probablemente representa un espacio vacío en el tablero de juego. Si no lo es, significa que hay algo en la nueva posición.
-     * Si `colisiones` es igual a `MANZANA`, lo cual probablemente representa una manzana, crea un nuevo segmento en la nueva posición, lo agrega al principio del array `cuerpoSerpiente`, que representa el cuerpo de la serpiente, actualiza el cuerpo de la serpiente, incrementa la puntuación (`puntuacion`), actualiza la visualización de la puntuación y genera una nueva posición para la manzana.
+     * Si `colisiones` es igual a `MANZANA`, lo cual probablemente representa una powerUp, crea un nuevo segmento en la nueva posición, lo agrega al principio del array `cuerpoSerpiente`, que representa el cuerpo de la serpiente, actualiza el cuerpo de la serpiente, incrementa la puntuación (`puntuacion`), actualiza la visualización de la puntuación y genera una nueva posición para la powerUp.
      * Si `colisiones` es igual a `CUERPO`, lo cual probablemente representa el cuerpo de la serpiente, devuelve `false`, indicando una colisión con el propio cuerpo de la serpiente.
      * Si `colisiones` es igual a `FONDO`, mueve cada segmento del cuerpo de la serpiente a la posición del segmento que está delante de él y mueve la cabeza de la serpiente a la nueva posición.
      * Finalmente, actualiza los recursos del juego utilizando la función `actualizarRecursos` y devuelve `true`, indicando que no hay colisión.
@@ -272,13 +248,10 @@ window.onload = () => {
             return false;
         }
 
-        if (SNAKE.chocaObj(nuevaDir, manzana)) {
-
-            const nuevoSeg = SNAKE.crearSegmento(CUERPO, 0, 0);
-            SNAKE.addSegmento(nuevoSeg);
-            puntuacion++;
-            actualizarPuntuacion();
-            generarPosicionesManzana(manzana);
+        if (SNAKE.chocaObj(nuevaDir, powerUp)) {
+            SNAKE.crearSegmento(CUERPO);
+            actualizarPuntuacion(powerUp.getPuntos());
+            nuevoPWUps(MANZANA);
             return true;
         }
         return !SNAKE.seCome(nuevaDir);
@@ -397,7 +370,7 @@ window.onload = () => {
      * Si el código del evento es una tecla válida, asigna el código del evento a la variable `codigo`. Si la puntuación (`puntuacion`) es 0, llama a la función `quitarPlay`, que oculta el botón de reproducción estableciendo su estilo de visualización en "none".
      * Luego, verifica si el código del evento no es nulo. Si no lo es, evita la acción predeterminada del evento si es posible. Esto se hace generalmente para evitar comportamientos específicos del navegador que podrían interferir con el juego.
      * A continuación, obtiene el primer segmento de la serpiente (`cabezaSerpiente`) y calcula la nueva posición (`nuevaPos`) basada en la dirección actual (`codigo`) y la posición actual de la cabeza de la serpiente (`cabezaSerpiente`).
-     * Luego, verifica si la nueva posición es diferente de la posición actual. Si lo es, verifica las colisiones en la nueva posición utilizando la función `manejarColisiones`. Esta función verifica si la nueva posición está fuera del tablero de juego o si colisiona con el cuerpo de la serpiente o una manzana. Si ocurre una colisión (es decir, `manejarColisiones` devuelve `false`), establece `juegoTerminado` en `true`.
+     * Luego, verifica si la nueva posición es diferente de la posición actual. Si lo es, verifica las colisiones en la nueva posición utilizando la función `manejarColisiones`. Esta función verifica si la nueva posición está fuera del tablero de juego o si colisiona con el cuerpo de la serpiente o una powerUp. Si ocurre una colisión (es decir, `manejarColisiones` devuelve `false`), establece `juegoTerminado` en `true`.
      * Finalmente, si `juegoTerminado` es `true`, llama a la función `gameOver`, que finaliza el juego y muestra un mensaje de fin de juego. También elimina el escuchador de eventos para el evento de liberación de tecla, muestra un diálogo para recopilar datos del usuario y recarga la página después de que el usuario envíe sus datos.
      */
     function manejarEventoMovimiento(event) {
@@ -417,7 +390,7 @@ window.onload = () => {
                 const nuevaPos = SNAKE.mantieneDir(DIRECCION[codigoDireccionActual], DIRECCION[codigo]) ?
                     DIRECCION[codigoDireccionActual] : DIRECCION[codigo];
 
-                codigoDireccionActual = codigo;
+                if (nuevaPos === DIRECCION[codigo]) codigoDireccionActual = codigo;
 
                 if (!manejarColisiones(nuevaPos)) {
                     juegoTerminado = true;
