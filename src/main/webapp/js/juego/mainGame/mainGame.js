@@ -273,7 +273,7 @@ window.onload = () => {
         }
 
         if (SNAKE.chocaObj(nuevaDir, manzana)) {
-            // Veo si se come una manzana aqui crece
+
             const nuevoSeg = SNAKE.crearSegmento(CUERPO, 0, 0);
             SNAKE.addSegmento(nuevoSeg);
             puntuacion++;
