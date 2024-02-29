@@ -3,29 +3,6 @@ import {PowerUp} from "./powerups.js";
 import {PuntuacionUsuario} from "./puntuacionUsuario.js"
 
 window.onload = () => {
-    /**
-     * Declaraciones de constantes y variables.
-     *
-     * @const {number} separacionPixeles - Define la separación entre píxeles en unidades de em.
-     * @const {number} TABLERO_X - Define el ancho del tablero de juego en celdas.
-     * @const {Array} tableroArr - Probablemente contendrá los datos del tablero de juego.
-     * @const {Array} pixeles - Probablemente contendrá los datos de los píxeles.
-     * @const {number} FONDO - Representa el estado de fondo de una celda en el tablero de juego.
-     * @const {number} CABEZA_SERPIENTE - Representa el estado de la cabeza de la serpiente en una celda del tablero de juego.
-     * @const {number} CUERPO - Representa el estado del cuerpo de la serpiente en una celda del tablero de juego.
-     * @const {number} MANZANA - Representa el estado de una powerUp en una celda del tablero de juego.
-     * @const {Object} DIRECCION - Mapea los códigos de tecla a vectores de dirección.
-     * @let {string} codigoDireccionActual - Almacenará el código de dirección actual.
-     * @let {number} puntuacion - Almacena la puntuación actual, inicializada en 0.
-     * @let {boolean} juegoTerminado - Indica si el juego ha terminado.
-     * @let {number} idIntervalo - Almacenará el ID del intervalo establecido por `setInterval`.
-     * @const {number} FPS - Define los fotogramas por segundo deseados.
-     * @const {number} intervalo - Define el intervalo entre fotogramas en milisegundos.
-     * @let {Array} cuerpoSerpiente - Almacenará los segmentos del cuerpo de la serpiente.
-     * @let {Object} powerUp - Un segmento que representa una powerUp.
-     * @const {number} POSX_INICIAL_SERPIENTE - Define la posición inicial en x de la serpiente.
-     * @const {number} POSY_INICIAL_SERPIENTE - Define la posición inicial en y de la serpiente.
-     */
 
     const TABLERO_X = 30;
     const separacionPixeles = 100 / TABLERO_X; // % de separacion entre pixeles
@@ -48,11 +25,10 @@ window.onload = () => {
         KeyD: { x: 1, y: 0 },
     };
     let codigoDireccionActual;
-    let puntuacion = 0; // Puntuacion inicial
     let juegoTerminado = false;
     let idIntervalo;
 
-    const FPS = 10; // Los FPS que deseas
+    const FPS = 10; // Los FPS del juego
     const intervalo = 1000 / FPS; // Intervalo de tiempo en ms
 
     let powerUp;
@@ -97,17 +73,15 @@ window.onload = () => {
      * @name actualizarPuntuacion
      */
     function actualizarPuntuacion(puntos) {
-        puntuacion += puntos;
+        almacenamiento.incrementarPuntuacion(puntos);
         document.querySelector(
             "#puntuacion"
-        ).textContent = `Puntuacion: ${puntuacion}`;
-        if (puntuacion >= localStorage.getItem("maxPuntuacion")) {
-            localStorage.setItem("maxPuntuacion", `${puntuacion}`);
+        ).textContent = `Puntuacion: ${almacenamiento.puntuacion}`;
+        if (almacenamiento.puntuacion >= almacenamiento.getPuntuacionMax()) {
+            almacenamiento.guardaPuntuacionMax(almacenamiento.puntuacion);
             document.querySelector(
                 "#puntuacion_max"
-            ).textContent = `Puntuacion mas alta: ${localStorage.getItem(
-                "maxPuntuacion"
-            )}`;
+            ).textContent = `Puntuacion mas alta: ${almacenamiento.getPuntuacionMax()}`;
         }
     }
 
@@ -157,7 +131,7 @@ window.onload = () => {
         const tablaPuntuaciones = document.querySelector(
             "#tablaPuntuacionesContenido"
         );
-        const arrayUsuarios = obtenerDatosUsuarios();
+        const arrayUsuarios = almacenamiento.obtenerDatosUsuarios();
         const frag = document.createDocumentFragment();
         tablaPuntuaciones.childNodes.forEach((elemento) => elemento.remove());
         arrayUsuarios.sort((a, b) => b.puntuacion - a.puntuacion);
@@ -281,60 +255,11 @@ window.onload = () => {
         form.addEventListener("submit", (event) => {
             event.preventDefault();
             const nombre = form.nombre.value;
-            guardarDatosUsuario(nombre, puntuacion);
+            almacenamiento.guardarDatosUsuario(nombre);
             dialog.close();
             window.location.reload();
         });
         document.querySelector("#game_over").style.display = "block";
-    }
-
-    /**
-     * Guarda los datos del usuario en el almacenamiento local.
-     * @param {string} nombre - El nombre del usuario.
-     * @param {number} puntuacion - La puntuación del usuario.
-     */
-    function guardarDatosUsuario(nombre, puntuacion) {
-        // Crear un objeto de usuario con el nombre y puntuación
-        let usuario = {
-            nombre: nombre,
-            puntuacion: puntuacion,
-        };
-
-        // Obtener la lista existente de usuarios
-        let usuarios = localStorage.getItem("usuarios");
-
-        // Comprobar si la lista de usuarios es null (es decir, si no había usuarios almacenados previamente)
-        if (!usuarios) {
-            // Si no había lista de usuarios, creamos una con el usuario actual
-            usuarios = [usuario];
-        } else {
-            // Si había una lista de usuarios, la convertimos de JSON a un objeto JavaScript
-            usuarios = JSON.parse(usuarios);
-
-            // Agregar el usuario a la lista de usuarios
-            usuarios.push(usuario);
-        }
-
-        // Convertir la lista de usuarios a JSON y guardar en localStorage
-        localStorage.setItem("usuarios", JSON.stringify(usuarios));
-    }
-
-    /**
-     * Obtiene la lista de usuarios almacenados en localStorage.
-     * @returns {Array} La lista de usuarios almacenados. Si no hay usuarios almacenados, devuelve un array vacío.
-     */
-    function obtenerDatosUsuarios() {
-        // Obtener la lista de usuarios de localStorage
-        let usuarios = localStorage.getItem("usuarios");
-
-        // Comprobar si la lista de usuarios es null (es decir, si no había usuarios almacenados previamente)
-        if (!usuarios) {
-            // Si no había lista de usuarios, devolvemos un array vacío
-            return [];
-        }
-
-        // Si había usuarios, los convertimos de JSON a un objeto JavaScript y los devolvemos
-        return JSON.parse(usuarios);
     }
 
     /**
@@ -376,7 +301,7 @@ window.onload = () => {
     function manejarEventoMovimiento(event) {
         if (comprobarKey(event)) {
             const codigo = event.code;
-            if (puntuacion === 0) {
+            if (almacenamiento.puntuacion === 0) {
                 quitarPlay();
             }
             if (codigo !== null) {

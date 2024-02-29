@@ -1,19 +1,16 @@
-export function PuntuacionUsuario(puntos) {
+export function PuntuacionUsuario() {
     return {
 
-        puntuacion: puntos,
-
-        puntuacionMax: undefined,
+        puntuacion: 0,
 
         /**
          * Guarda los datos del usuario en el almacenamiento local.
          * @param {string} nombre - El nombre del usuario.
-         * @param {number} puntuacion - La puntuación del usuario.
          */
-        guardarDatosUsuario: function (nombre, puntuacion) {
+        guardarDatosUsuario: function (nombre) {
             let usuario = {
                 nombre: nombre,
-                puntuacion: puntuacion,
+                puntuacion: this.puntuacion,
             };
 
             let usuarios = localStorage.getItem("usuarios");
@@ -41,8 +38,7 @@ export function PuntuacionUsuario(puntos) {
          * @name actualizarPuntuacion
          */
         guardaPuntuacionMax: function (puntos) {
-            this.puntuacionMax = puntos;
-            localStorage.setItem("maxPuntuacion", `${this.puntuacionMax}`);
+            localStorage.setItem("maxPuntuacion", `${puntos}`);
         },
 
         /**
@@ -57,6 +53,10 @@ export function PuntuacionUsuario(puntos) {
             }
 
             return JSON.parse(usuarios);
+        },
+
+        getPuntuacionMax : function () {
+            return localStorage.getItem("maxPuntuacion");
         }
     }
 }
